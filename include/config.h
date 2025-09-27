@@ -10,29 +10,21 @@ extern pros::MotorGroup leftMotors;
 extern pros::MotorGroup rightMotors;
 
 namespace Motor{
-    // extern pros::Motor intakeB;
-    extern pros::Motor intake;
-    extern pros::Motor lbL;
-    extern pros::Motor lbR;
+    extern pros::Motor intakeF;
+    extern pros::Motor intakeM;
+    extern pros::Motor intakeU;
 } // namespace Motor
 
 namespace Sensor{
-    // extern pros::Rotation lbR;
-    extern pros::Distance lbD;
+    extern pros::Distance d_front;
+    extern pros::Distance d_right;
     extern pros::Optical o_colorSort;
-    extern pros::Distance d_colorSort;
     extern pros::adi::DigitalIn autonSwitch;
 } // namspace Sensor
 
 namespace Piston{
-    extern pros::adi::DigitalOut lightsaberL;
-    extern pros::adi::DigitalOut lightsaberR;
-    // extern pros::adi::DigitalOut saberclamp;
-    extern pros::adi::DigitalOut mogo;
-    // extern pros::adi::DigitalOut pto;
-    // extern pros::adi::DigitalOut release;
-    extern pros::adi::DigitalOut colorSort;
-    extern pros::adi::DigitalOut tipper;
+    extern pros::adi::DigitalOut loader;
+    extern pros::adi::DigitalOut miniHood;
 } // namespace Piston
 
 class CustomIMU : public pros::IMU {

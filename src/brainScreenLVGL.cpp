@@ -277,8 +277,8 @@ void set_up(){
 
 namespace LVGL_vals{
 	int bVolt;
-	double lbAvg;
-	int intake;
+	double intakeF;
+	int intakeU;
 	double radio_deci;
 
 }
@@ -295,8 +295,8 @@ void screen_upd(){
 		std::vector<double> LMotor = leftMotors.get_temperature_all(); 
 		std::vector<double> RMotor = rightMotors.get_temperature_all();
 		LVGL_vals::bVolt = pros::battery::get_capacity();
-		LVGL_vals::lbAvg = Motor::lbL.get_temperature();
-		LVGL_vals::intake = Motor::intake.get_temperature();
+		LVGL_vals::intakeF = Motor::intakeF.get_temperature();
+		LVGL_vals::intakeU = Motor::intakeU.get_temperature();
 
 		if((RMotor[0])/45.0 >= 1){
 			Rtemp = 100;
@@ -306,13 +306,13 @@ void screen_upd(){
 			Ltemp = 100;
 		} else Ltemp = (int)((LMotor[0] - 35.0)*10);
 
-		if((LVGL_vals::intake)/45.0 >= 1){
+		if((LVGL_vals::intakeU)/45.0 >= 1){
 			intake = 100;
 		} else intake = (int)((intake - 35.0)*10);
 
-		if((LVGL_vals::lbAvg)/45.0 >= 1){
+		if((LVGL_vals::intakeF)/45.0 >= 1){
 			lb_temp = 100;
-		} else lb_temp = (int)((LVGL_vals::lbAvg - 35.0)*10);
+		} else lb_temp = (int)((LVGL_vals::intakeF - 35.0)*10);
 
 
 		lv_bar_set_value(bar1, Ltemp, LV_ANIM_ON);

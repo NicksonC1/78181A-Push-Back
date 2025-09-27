@@ -8,32 +8,26 @@
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 // DriveTrain
-pros::MotorGroup leftMotors({-11, 12, -13}, pros::MotorGearset::blue);
-pros::MotorGroup rightMotors({18, -19, 20}, pros::MotorGearset::blue); 
+pros::MotorGroup leftMotors({21, 20, 3}, pros::MotorGearset::blue);
+pros::MotorGroup rightMotors({-4, -5, -6}, pros::MotorGearset::blue); 
 
 namespace Motor{
   // pros::Motor intakeB(16, pros::MotorGearset::blue);
-  pros::Motor intake(-2, pros::MotorGearset::blue);
-  pros::Motor lbL(-8, pros::MotorGearset::green);
-  pros::Motor lbR(7, pros::MotorGearset::green);
+  pros::Motor intakeF(-1, pros::MotorGearset::blue);
+  pros::Motor intakeM(2, pros::MotorGearset::blue);
+  pros::Motor intakeU(-10, pros::MotorGearset::blue);
 } // namespace Motor
 
 namespace Sensor{
-  pros::Distance lbD(3);
-  pros::Optical o_colorSort(10);
-  pros::Distance d_colorSort(5);
+  pros::Distance d_front(19);
+  pros::Distance d_right(11);
+  pros::Optical o_colorSort(12);
   pros::adi::DigitalIn autonSwitch('A');
 } // namspace Sensor
 
 namespace Piston{
-  pros::adi::DigitalOut lightsaberL('C'); // checked
-  pros::adi::DigitalOut lightsaberR('G'); 
-  // pros::adi::DigitalOut saberclamp('F'); // checked
-  pros::adi::DigitalOut mogo({9,'H'}); // checked
-  // pros::adi::DigitalOut pto('G'); // checked
-  // pros::adi::DigitalOut release('H'); // checked
-  pros::adi::DigitalOut colorSort('H'); 
-  pros::adi::DigitalOut tipper('B'); 
+  pros::adi::DigitalOut loader('B'); 
+  pros::adi::DigitalOut miniHood('C'); 
 } // namespace Piston
 
 // <------------------------------------------------------------- Odom Sensors ------------------------------------------------------------->
@@ -51,9 +45,9 @@ class CustomIMU : public pros::IMU {
     const double m_scalar;
 };
 
-CustomIMU s_imu(6, 1.01265822785);
+CustomIMU s_imu(13, 1.0);
 // pros::Imu imu(21);
-pros::Rotation horizontalEnc(17);
+pros::Rotation horizontalEnc(14);
 pros::Rotation verticalEnc(15);
 // port 14 broken
 
@@ -73,7 +67,7 @@ genesis::Drivetrain drivetrain(&leftMotors, // left motor group
                               11.5, // 11.5 inch track width
                               genesis::Omniwheel::NEW_325, // using new 3.25" omnis
                               450, // drivetrain rpm is 450
-                              2 // horizontal drift is 2. If we had traction wheels, it would have been 8
+                              8 // horizontal drift is 2. If we had traction wheels, it would have been 8
 );
 
 genesis::ControllerSettings linearController (6, // proportional gain (kP)
@@ -98,9 +92,9 @@ genesis::ControllerSettings angularController(3, // proportional gain (kP)
                                               0 // maximum acceleration (slew)
 );
 
-genesis::OdomSensors sensors(&vertical_tracking_wheel, // vertical tracking wheel
+genesis::OdomSensors sensors(nullptr, // vertical tracking wheel
                             nullptr, // vertical tracking wheel 2, set to nullptr as we don't have a second one
-                            &horizontal_tracking_wheel, // horizontal tracking wheel
+                            nullptr, // horizontal tracking wheel
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &s_imu // inertial sensor
 );

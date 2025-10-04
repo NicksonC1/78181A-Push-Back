@@ -23,8 +23,10 @@ namespace Sensor{
 } // namspace Sensor
 
 namespace Piston{
+    extern pros::adi::DigitalOut intake;
     extern pros::adi::DigitalOut loader;
     extern pros::adi::DigitalOut miniHood;
+    extern pros::adi::DigitalOut hood;
 } // namespace Piston
 
 class CustomIMU : public pros::IMU {
@@ -42,12 +44,12 @@ extern CustomIMU s_imu;
 extern pros::Rotation horizontalEnc;
 extern pros::Rotation verticalEnc;
 
-extern genesis::TrackingWheel horizontal;
-extern genesis::TrackingWheel vertical;
-extern genesis::Drivetrain drivetrain;
-extern genesis::ControllerSettings linearController;
-extern genesis::ControllerSettings angularController;
-extern genesis::OdomSensors sensors;
-extern genesis::ExpoDriveCurve throttleCurve;
-extern genesis::ExpoDriveCurve steerCurve;
-extern genesis::Chassis chassis;
+// extern genesis::TrackingWheel horizontal;
+// extern genesis::TrackingWheel vertical;
+// extern genesis::Drivetrain drivetrain;
+// extern genesis::ControllerSettings linearController;
+// extern genesis::ControllerSettings angularController;
+// extern genesis::OdomSensors sensors;
+// extern genesis::ExpoDriveCurve throttleCurve;
+// extern genesis::ExpoDriveCurve steerCurve;
+// extern genesis::Chassis chassis;

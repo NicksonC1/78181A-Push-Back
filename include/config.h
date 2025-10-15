@@ -18,6 +18,7 @@ namespace Motor{
 namespace Sensor{
     extern pros::Distance d_front;
     extern pros::Distance d_right;
+    extern pros::Distance d_filled;
     extern pros::Optical o_colorSort;
     extern pros::adi::DigitalIn autonSwitch;
 } // namspace Sensor

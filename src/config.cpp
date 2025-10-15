@@ -19,6 +19,7 @@ namespace Motor{
 namespace Sensor{
   pros::Distance d_front(14); // checked
   pros::Distance d_right(6); // checked
+  pros::Distance d_filled(5); // checked
   pros::Optical o_colorSort(9); // checked
   pros::adi::DigitalIn autonSwitch('F');
 } // namspace Sensor

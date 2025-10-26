@@ -306,19 +306,23 @@ namespace Auton{
     } // namespace Test
     namespace Template{
         void left(){
-            chassis.moveToPoint(17,-22,2000,{.forwards=false,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
-            chassis.turnToPoint(0,-3.5,1500,{.forwards=true,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
+            Piston::miniHood.set_value(true);
+            Motor::intakeU.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+            chassis.moveToPoint(16,-21,2000,{.forwards=false,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
+            chassis.waitUntilDone();
+            Piston::miniHood.set_value(true);
+            chassis.turnToPoint(0,-9,1500,{.forwards=true,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
             // chassis.turnToHeading(315,1200,{.direction=genesis::AngularDirection::AUTO,.maxSpeed=90,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
             TaskHandler::colorSort = false;
-            Misc::cdrift(30,30,350);
+            Misc::cdrift(20,20,300);
             Piston::miniHood.set_value(true);
             TaskHandler::antiJam = true;
             TaskHandler::antiJam2 = true;
             TaskHandler::antiJam3 = true;
             Motor::intakeF.move(127); Motor::intakeM.move(127); Motor::intakeU.move(85);
             Misc::cdrift(25,25,750);
-            pros::delay(600);
+            pros::delay(1200);
             Motor::intakeF.brake(); Motor::intakeM.brake(); Motor::intakeU.brake();
             chassis.moveToPoint(48,-49,2000,{.forwards=false,.maxSpeed=85,.minSpeed=10,.earlyExitRange=0});
             chassis.waitUntilDone();
@@ -327,12 +331,12 @@ namespace Auton{
             TaskHandler::antiJam3 = false;
             TaskHandler::colorSort = true;
             Piston::miniHood.set_value(false);
-            chassis.turnToPoint(68,-46,1500,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=1});
+            chassis.turnToPoint(68,-46,1500,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             // chassis.turnToHeading(90,1500,{.direction=genesis::AngularDirection::CCW_COUNTERCLOCKWISE,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             chassis.waitUntilDone();
             Motor::intakeF.move(127); Motor::intakeM.move(127); Motor::intakeU.move(127);
-            Misc::cdrift(55,55,300);
-            Misc::cdrift(15,15,1450);
+            Misc::cdrift(55,55,350);
+            Misc::cdrift(15,15,1500);
             Piston::loader.set_value(false);
 
             chassis.moveToPoint(25.5,-51.5,1200,{.forwards=false,.maxSpeed=75,.minSpeed=10,.earlyExitRange=2});
@@ -407,13 +411,14 @@ namespace Auton{
             pros::delay(250);
             Piston::loader.set_value(true);
             
-            chassis.moveToPoint(17,-22,2000,{.forwards=false,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
+            chassis.moveToPoint(17,-19.5,2000,{.forwards=false,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
+            chassis.waitUntilDone();
+            Piston::miniHood.set_value(true);
             chassis.turnToPoint(0,-3.5,1500,{.forwards=true,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
             // chassis.turnToHeading(315,1200,{.direction=genesis::AngularDirection::AUTO,.maxSpeed=90,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
             TaskHandler::colorSort = false;
             Misc::cdrift(30,30,350);
-            Piston::miniHood.set_value(true);
             TaskHandler::antiJam = true;
             TaskHandler::antiJam2 = true;
             TaskHandler::antiJam3 = true;
@@ -438,7 +443,7 @@ namespace Auton{
             Misc::cdrift(15,15,900);
             Piston::loader.set_value(false);
 
-            chassis.moveToPoint(25.5,-51.5,1200,{.forwards=false,.maxSpeed=75,.minSpeed=10,.earlyExitRange=2});
+            chassis.moveToPoint(25.5,-52,1200,{.forwards=false,.maxSpeed=75,.minSpeed=10,.earlyExitRange=2});
             chassis.waitUntilDone();
             Misc::cdrift(-10,-10);
             Piston::hood.set_value(true);
@@ -453,20 +458,20 @@ namespace Auton{
 
 
             chassis.moveToPoint(37.5,-10,3000,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1});
-            chassis.moveToPoint(20,16,3000,{.forwards=true,.maxSpeed=75,.minSpeed=10,.earlyExitRange=1});
+            chassis.moveToPoint(20,20,3000,{.forwards=true,.maxSpeed=75,.minSpeed=10,.earlyExitRange=1});
             // chassis.moveToPoint(20,23,3000,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
             Misc::cdrift(75,-75,150);
-            chassis.moveToPoint(41.5,43,1750,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1});
+            chassis.moveToPoint(41.5,40,1750,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
             Piston::loader.set_value(true);
-            chassis.turnToPoint(68,44.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=1});
+            chassis.turnToPoint(68,43,1250,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
             Motor::intakeF.move(127); Motor::intakeM.move(127); Motor::intakeU.move(127);
             // Misc::cdrift(50,50,1500);
-            Misc::cdrift(55,55,300);
+            Misc::cdrift(55,55,350);
             Misc::cdrift(15,15,900);
-            chassis.moveToPoint(20,46,1200,{.forwards=false,.maxSpeed=80,.minSpeed=10,.earlyExitRange=2});
+            chassis.moveToPoint(20,45,1200,{.forwards=false,.maxSpeed=80,.minSpeed=10,.earlyExitRange=2});
             chassis.waitUntilDone();
             Piston::hood.set_value(true);
             // Piston::loader.set_value(true);
@@ -479,15 +484,19 @@ namespace Auton{
     }
     namespace Qual{
         void leftB(){
-            TaskHandler::colorSort = true;
+            // Piston::miniHood.set_value(true);
+            TaskHandler::colorSort = false;
             Color::state = Color::colorVals::RED;
             chassis.setPose(47.28, -7.67, 237.5);
             TaskHandler::antiJam = true;
+            // Piston::miniHood.set_value(true);
             Motor::intakeM.move(127); Motor::intakeF.move(127);
-            chassis.moveToPose(9,-42,180,3000,{.forwards=true,.horizontalDrift=12,.lead=0.38,.maxSpeed=60,.minSpeed=10,.earlyExitRange=1});
+            chassis.moveToPose(9,-43,180,3000,{.forwards=true,.horizontalDrift=12,.lead=0.38,.maxSpeed=60,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
+            // Piston::miniHood.set_value(false);
             pros::delay(250);
             Piston::loader.set_value(true);
+            Piston::miniHood.set_value(true);
             Template::left();
         }
         void rightB(){
@@ -502,6 +511,7 @@ namespace Auton{
             chassis.waitUntilDone();
             pros::delay(250);
             Piston::loader.set_value(true);
+            Piston::miniHood.set_value(true);
             Template::right();
         }
         void soloB(){
@@ -512,15 +522,18 @@ namespace Auton{
 
 
         void leftR(){
+            // Piston::miniHood.set_value(true);
             TaskHandler::colorSort = true;
             Color::state = Color::colorVals::BLUE;
             chassis.setPose(47.28, -7.67, 237.5);
             TaskHandler::antiJam = true;
             Motor::intakeM.move(127); Motor::intakeF.move(127);
-            chassis.moveToPose(9,-42,180,3000,{.forwards=true,.horizontalDrift=12,.lead=0.38,.maxSpeed=60,.minSpeed=10,.earlyExitRange=1});
+            chassis.moveToPose(9,-43,180,3000,{.forwards=true,.horizontalDrift=12,.lead=0.38,.maxSpeed=60,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
+            Piston::miniHood.set_value(true);
             pros::delay(250);
             Piston::loader.set_value(true);
+            Piston::miniHood.set_value(true);
             Template::left();
         }
         void rightR(){
@@ -625,7 +638,18 @@ namespace Auton{
         } // namespace Qual
         namespace Elim{
             void left(){
-
+                TaskHandler::colorSort = true;
+                Color::state = Color::colorVals::NONE;
+                chassis.setPose(47.28, -7.67, 237.5);
+                TaskHandler::antiJam = true;
+                Motor::intakeM.move(127); Motor::intakeF.move(127);
+                chassis.moveToPose(9,-42,180,3000,{.forwards=true,.horizontalDrift=12,.lead=0.38,.maxSpeed=60,.minSpeed=10,.earlyExitRange=1});
+                chassis.waitUntilDone();
+                Piston::miniHood.set_value(false);
+                pros::delay(250);
+                Piston::loader.set_value(true);
+                Piston::miniHood.set_value(true);
+                Template::left();
 			}
 			void right(){
 
@@ -666,14 +690,14 @@ namespace Auton{
             Motor::intakeF.move(127); Motor::intakeM.move(127); Motor::intakeU.move(127);
             // Piston::loader.set_value(true);
             Misc::cdrift(65,65,375);
-            Misc::cdrift(15,15,2200);
+            Misc::cdrift(15,15,3200);
             chassis.moveToPoint(25.5,-47.5,1200,{.forwards=false,.maxSpeed=75,.minSpeed=10,.earlyExitRange=2});
             chassis.waitUntilDone();
             Piston::hood.set_value(true);
             Misc::cdrift(-10,-10);
             TaskHandler::antiJam2 = true;
             TaskHandler::antiJam3 = true;
-            pros::delay(2200);
+            pros::delay(3200);
             TaskHandler::antiJam2 = false;
             TaskHandler::antiJam3 = false;
             Motor::intakeF.brake(); Motor::intakeM.brake(); Motor::intakeU.brake();
@@ -689,50 +713,49 @@ namespace Auton{
             chassis.moveToPoint(-36,-60,2000,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=2});
             chassis.waitUntilDone();
             Piston::loader.set_value(true);
-            chassis.moveToPoint(-48,-47,1500,{.forwards=true,.maxSpeed=80,.minSpeed=10,.earlyExitRange=2});
+            chassis.moveToPoint(-48,-50,1500,{.forwards=true,.maxSpeed=80,.minSpeed=10,.earlyExitRange=2});
             
-            chassis.turnToPoint(-68,-47,1500,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
+            chassis.turnToPoint(-68,-50,1500,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             // chassis.turnToHeading(90,1500,{.direction=genesis::AngularDirection::CCW_COUNTERCLOCKWISE,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             chassis.waitUntilDone();
             Motor::intakeF.move(127); Motor::intakeM.move(127); Motor::intakeU.move(127);
             Misc::cdrift(65,65,375);
-            Misc::cdrift(15,15,2000);
+            Misc::cdrift(15,15,3200);
 
             Piston::loader.set_value(false);
 
-            chassis.moveToPoint(-25.5,-50,1200,{.forwards=false,.maxSpeed=75,.minSpeed=10,.earlyExitRange=2});
+            chassis.moveToPoint(-25.5,-51,1200,{.forwards=false,.maxSpeed=75,.minSpeed=10,.earlyExitRange=2});
             chassis.waitUntilDone();
             Misc::cdrift(-10,-10);
             Piston::hood.set_value(true);
             TaskHandler::antiJam2 = true;
             TaskHandler::antiJam3 = true;
-            pros::delay(2200);
+            pros::delay(3200);
             TaskHandler::antiJam2 = false;
             TaskHandler::antiJam3 = false;
 
 
             // 3 
-
-            chassis.moveToPoint(-44,41,3000,{.forwards=true,.maxSpeed=95,.minSpeed=10,.earlyExitRange=2});
+            chassis.moveToPoint(-44,40,3000,{.forwards=true,.maxSpeed=95,.minSpeed=10,.earlyExitRange=2});
             chassis.waitUntilDone();
             Piston::hood.set_value(false);
             Piston::loader.set_value(true);
-            chassis.turnToPoint(-68,40,1500,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
+            chassis.turnToPoint(-68,39,1500,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             // chassis.turnToHeading(90,1500,{.direction=genesis::AngularDirection::CCW_COUNTERCLOCKWISE,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             chassis.waitUntilDone();
             Motor::intakeF.move(127); Motor::intakeM.move(127); Motor::intakeU.move(127);
             Misc::cdrift(65,65,550);
-            Misc::cdrift(15,15,2000);
+            Misc::cdrift(15,15,3200);
 
             Piston::loader.set_value(false);
 
-            chassis.moveToPoint(-25.5,41,1200,{.forwards=false,.maxSpeed=75,.minSpeed=10,.earlyExitRange=2});
+            chassis.moveToPoint(-25.5,40,1200,{.forwards=false,.maxSpeed=75,.minSpeed=10,.earlyExitRange=2});
             chassis.waitUntilDone();
             Misc::cdrift(-10,-10);
             Piston::hood.set_value(true);
             TaskHandler::antiJam2 = true;
             TaskHandler::antiJam3 = true;
-            pros::delay(2200);
+            pros::delay(3200);
             TaskHandler::antiJam2 = false;
             TaskHandler::antiJam3 = false;
             Misc::cdrift(50,45,500);
@@ -745,16 +768,16 @@ namespace Auton{
             chassis.moveToPoint(33,53.5,2000,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=2});
             chassis.waitUntilDone();
             Piston::loader.set_value(true);
-            chassis.moveToPoint(39,39.5,1500,{.forwards=true,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
+            chassis.moveToPoint(39,40.5,1500,{.forwards=true,.maxSpeed=80,.minSpeed=10,.earlyExitRange=1});
 
             
-            chassis.turnToPoint(59,39.5,1500,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
+            chassis.turnToPoint(59,40.5,1500,{.forwards=true,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             // chassis.turnToHeading(90,1500,{.direction=genesis::AngularDirection::CCW_COUNTERCLOCKWISE,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             chassis.waitUntilDone();
             // Piston::loader.set_value(true);
             Motor::intakeF.move(127); Motor::intakeM.move(127); Motor::intakeU.move(127);
             Misc::cdrift(65,65,400);
-            Misc::cdrift(15,15,2200);
+            Misc::cdrift(15,15,3200);
 
             Piston::loader.set_value(false);
 
@@ -764,7 +787,7 @@ namespace Auton{
             Piston::hood.set_value(true);
             TaskHandler::antiJam2 = true;
             TaskHandler::antiJam3 = true;
-            pros::delay(2200);
+            pros::delay(3200);
             TaskHandler::antiJam2 = false;
             TaskHandler::antiJam3 = false;
             chassis.turnToHeading(90,1500,{.direction=genesis::AngularDirection::AUTO,.maxSpeed=90,.minSpeed=10,.earlyExitRange=1});
@@ -774,7 +797,7 @@ namespace Auton{
             chassis.turnToHeading(180,1500,{.direction=genesis::AngularDirection::AUTO,.maxSpeed=90,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
             Piston::loader.set_value(true);
-            Misc::cdrift(70,74,1300);
+            Misc::cdrift(80,84,1400);
             // chassis.moveToPose(68,24,180,3000,{.forwards=true,.horizontalDrift=12,.lead=0.3,.maxSpeed=75,.minSpeed=10,.earlyExitRange=1});
 
         }
@@ -855,7 +878,7 @@ namespace Screen {
 
 using AutonFunc = void(*)();
 std::vector<std::pair<std::string, AutonFunc>> autonRoutines = {
-    {"Default Auton", Auton::Test::main},
+    {"Default Auton", Auton::Elim::left},
     
     {"Blue Left Qual", Auton::Qual::leftB},
     {"Red Left Qual", Auton::Qual::leftR},
@@ -958,6 +981,10 @@ void autonomous() {
     // Auton::Qual::soloR();
     // Auton::Qual::halfAWP();
     // Auton::Skills::main();
+    // Auton::Qual::soloR();
+    // Piston::miniHood.set_value(true);
+    // Auton::Qual::leftB();
+    // Auton::Qual::leftR();
     // pros::delay(1000000);
     // Color::state = Color::colorVals::BLUE;
     // TaskHandler::antiJam = true;

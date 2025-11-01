@@ -11,24 +11,23 @@ pros::MotorGroup leftMotors({-13, -12, -11}, pros::MotorGearset::blue); // check
 pros::MotorGroup rightMotors({18, 19, 20}, pros::MotorGearset::blue); // checked
 
 namespace Motor{
-  pros::Motor intakeF(-8, pros::MotorGearset::blue); // checked
-  pros::Motor intakeM(2, pros::MotorGearset::blue); // checked
-  pros::Motor intakeU(-10, pros::MotorGearset::blue); // checked
+  pros::Motor intakeF(3, pros::MotorGearset::blue); // checked
+  pros::Motor intakeU(-2, pros::MotorGearset::blue); // checked
 } // namespace Motor
 
 namespace Sensor{
-  pros::Distance d_front(14); // checked
-  pros::Distance d_right(6); // checked
-  pros::Distance d_filled(5); // checked
-  pros::Optical o_colorSort(9); // checked
-  pros::adi::DigitalIn autonSwitch('F');
+  pros::Distance d_front(22); // checked
+  pros::Distance d_right(22); // checked
+  pros::Distance d_filled(22); // checked
+  pros::Optical o_colorSort(22); // checked
+  pros::adi::DigitalIn autonSwitch('Z');
 } // namspace Sensor
 
 namespace Piston{
-  pros::adi::DigitalOut intake('G'); // checked
-  pros::adi::DigitalOut loader('D'); // checked
-  pros::adi::DigitalOut miniHood('H'); // checked
-  pros::adi::DigitalOut hood('A'); // checked
+  pros::adi::DigitalOut loader('Z'); 
+  pros::adi::DigitalOut clamp('Z'); 
+  pros::adi::DigitalOut park('Z'); 
+  pros::adi::DigitalOut goal('Z'); 
 } // namespace Piston
 
 // <------------------------------------------------------------- Odom Sensors ------------------------------------------------------------->

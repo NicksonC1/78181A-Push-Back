@@ -11,7 +11,6 @@ extern pros::MotorGroup rightMotors;
 
 namespace Motor{
     extern pros::Motor intakeF;
-    extern pros::Motor intakeM;
     extern pros::Motor intakeU;
 } // namespace Motor
 
@@ -24,10 +23,10 @@ namespace Sensor{
 } // namspace Sensor
 
 namespace Piston{
-    extern pros::adi::DigitalOut intake;
     extern pros::adi::DigitalOut loader;
-    extern pros::adi::DigitalOut miniHood;
-    extern pros::adi::DigitalOut hood;
+    extern pros::adi::DigitalOut clamp;
+    extern pros::adi::DigitalOut park;
+    extern pros::adi::DigitalOut goal;
 } // namespace Piston
 
 class CustomIMU : public pros::IMU {

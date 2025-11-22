@@ -55,7 +55,7 @@ genesis::ControllerSettings linearController (0, // proportional gain (kP)
                                               0 // maximum acceleration (slew)
 );
 
-genesis::ControllerSettings angularController(0, // proportional gain (kP)
+genesis::ControllerSettings angularController(1, // proportional gain (kP)
                                               0, // integral gain (kI)
                                               0, // derivative gain (kD) 
                                               0, // anti windup
@@ -178,9 +178,9 @@ namespace Misc{
         double theta = heading * M_PI / 180.0;
 
         double d_front = Sensor::d_front.get_distance() / 25.4;
-        double d_right = Sensor::d_right.get_distance() / 25.4;
+        double d_left = Sensor::d_left.get_distance() / 25.4;
 
-        double x = (d_right - halfField) - (offsetR * cos(theta)) - (offsetF * sin(theta));
+        double x = (d_left - halfField) - (offsetR * cos(theta)) - (offsetF * sin(theta));
         double y = (halfField - d_front) - (offsetF * cos(theta)) + (offsetR * sin(theta));
 
         chassis.setPose(x, y, heading);
@@ -214,7 +214,7 @@ namespace Jam{
                 counter = 0;  
             }
         }
-        if(TaskHandler::antiJam3){
+        if(TaskHandler::antiJam2){
             counter+=Misc::DELAY;
             if(Motor::intakeU.get_actual_velocity() == 0 && counter > 300) stuck = true;
             if (stuck == true) {
@@ -226,13 +226,6 @@ namespace Jam{
                 counter = 0;  
             }
         }
-    }
-    void intake(){
-        if(Sensor::d_filled.get_distance() < 25) {
-            counter1+=Misc::DELAY;
-            if(counter1 > 1000) TaskHandler::filled = true;
-        }
-        // counter1 = 0;
     }
 }
 
@@ -341,17 +334,13 @@ namespace Driver{
     void joystick(){
         while(1){
             if(TaskHandler::driver) {
-                // int leftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-                // int rightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
                 int leftY = Misc::curve(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), curveVal, false); 
                 int rightX = Misc::curve(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), curveVal, false);
-                // leftMotors.move(leftY+rightX);
-                // rightMotors.move(leftY-rightX);
-                // leftMotors.move(leftY+rightX*0.9);
-                // rightMotors.move(leftY-rightX*0.9);
-                if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) { b_driver =! b_driver; }
-                if(b_driver) {leftMotors.move(leftY*0.4+rightX*0.4); rightMotors.move(leftY*0.4-rightX*0.4); }
-                else { leftMotors.move(leftY+rightX*0.9); rightMotors.move(leftY-rightX*0.9);}
+                leftMotors.move(leftY+rightX*0.9);
+                rightMotors.move(leftY-rightX*0.9);
+                // if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) { b_driver =! b_driver; }
+                // if(b_driver) {leftMotors.move(leftY*0.4+rightX*0.4); rightMotors.move(leftY*0.4-rightX*0.4); }
+                // else { leftMotors.move(leftY+rightX*0.9); rightMotors.move(leftY-rightX*0.9);}
             }
             pros::delay(Misc::DELAY);
         }
@@ -431,7 +420,9 @@ void autonSwitch() {
 LV_IMG_DECLARE(WO_logo);
 LV_IMG_DECLARE(Final_log);
 LV_IMG_DECLARE(screen);
+LV_IMG_DECLARE(sixseven);
 // lv_obj_t * sbg = lv_img_create(lv_scr_act());
+lv_obj_t * sixSeven = lv_img_create(lv_scr_act());
 lv_obj_t * slogo = lv_img_create(lv_scr_act());
 lv_obj_t * Wlogo = lv_img_create(lv_scr_act());
 lv_obj_t * Slogo = lv_img_create(lv_scr_act());
@@ -446,7 +437,7 @@ void initialize() {
     chassis.calibrate(); 
     Sensor::o_colorSort.set_led_pwm(100);
     Sensor::o_colorSort.set_integration_time(5);
-    Motor::intakeF.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);  Motor::intakeU.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    Motor::intakeF.set_brake_mode(pros::E_MOTOR_BRAKE_COAST); Motor::intakeU.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
     // lv_init();
     // set_up();
@@ -458,11 +449,11 @@ void initialize() {
     // lv_img_set_src(Slogo, &screen);
 	// lv_obj_set_pos(Slogo, 0, 0);
 
+    // lv_img_set_src(sixSeven, &sixseven);
+	// lv_obj_set_pos(sixSeven, 160, 0);
+
     pros::Task screenTask([&]() {
         while (1) {
-            // pros::lcd::print(3, "Pos: %d", Sensor::lbR.get_position());
-            // pros::lcd::print(3, "Pos: %f", Motor::lb.get_position());
-            // Misc::reset();
             pros::lcd::print(0, "X: %f", chassis.getPose().x);
             pros::lcd::print(1, "Y: %f", chassis.getPose().y);
             pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
@@ -492,7 +483,7 @@ void autonomous() {
     // Motor::intakeM.move(127);
     // Motor::intakeU.move(127);
     // pros::delay(1000000);
-    // chassis.turnToHeading(90,1000);
+    chassis.turnToHeading(90,1000);
     // chassis.turnToHeading(180,1000);
     // chassis.turnToHeading(270,1000);
     // chassis.turnToHeading(0,1000);
@@ -508,7 +499,8 @@ void autonomous() {
     // Piston::miniHood.set_value(true);
     // Auton::Qual::leftB();
     // Auton::Qual::leftR();
-    // pros::delay(1000000);
+    // chassis.turnToHeading(90,100000);
+    pros::delay(1000000);
     // Color::state = Color::colorVals::BLUE;
     // TaskHandler::antiJam = true;
     // pros::Task sorterC([&](){ while(1) { Color::colorSort(Color::state);  pros::delay(5); }});
@@ -523,13 +515,14 @@ void autonomous() {
 void opcontrol() {
     pros::lcd::shutdown();
     lv_init();
-    lv_img_set_src(Slogo, &screen);
-	lv_obj_set_pos(Slogo, 0, 0);
+    // lv_img_set_src(Slogo, &screen);
+	// lv_obj_set_pos(Slogo, 0, 0);
+    lv_img_set_src(sixSeven, &sixseven);
+	lv_obj_set_pos(sixSeven, 160, 0);
 
     pros::Task intakeTask(Driver::intake);
     pros::Task driverTask(Driver::joystick);
     pros::Task pistonTask(Driver::piston);
-    // pros::Task hangTask(Driver::hang);
     TaskHandler::colorSort = false;
     TaskHandler::antiJam = false;
 	leftMotors.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST); rightMotors.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);

@@ -16,10 +16,10 @@ namespace Motor{
 } // namespace Motor
 
 namespace Sensor{
-  pros::Distance d_front(22); // checked
-  pros::Distance d_right(22); // checked
-  pros::Distance d_filled(22); // checked
-  pros::Optical o_colorSort(22); // checked
+  pros::Distance d_front(22); 
+  pros::Distance d_left(22); 
+  pros::Optical o_colorSort(22); 
+  pros::Optical o_crossed(22); 
   pros::adi::DigitalIn autonSwitch('Z');
 } // namspace Sensor
 

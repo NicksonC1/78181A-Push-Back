@@ -90,5 +90,6 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp"
-    }
+    },
+    "makefile.configureOnOpen": false
 }

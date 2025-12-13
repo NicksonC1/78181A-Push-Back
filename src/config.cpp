@@ -7,27 +7,28 @@
 // controller
 pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
-pros::MotorGroup leftMotors({-13, -12, -11}, pros::MotorGearset::blue); // checked
+pros::MotorGroup leftMotors({-11, -12, -13}, pros::MotorGearset::blue); // checked
 pros::MotorGroup rightMotors({18, 19, 20}, pros::MotorGearset::blue); // checked
 
 namespace Motor{
-  pros::Motor intakeF(3, pros::MotorGearset::blue); // checked
-  pros::Motor intakeU(-2, pros::MotorGearset::blue); // checked
+  pros::Motor intakeF(10, pros::MotorGearset::blue); // checked
+  pros::Motor intakeU(-1, pros::MotorGearset::blue); // checked
 } // namespace Motor
 
 namespace Sensor{
-  pros::Distance d_front(22); 
-  pros::Distance d_left(22); 
-  pros::Optical o_colorSort(22); 
-  pros::Optical o_crossed(22); 
-  pros::adi::DigitalIn autonSwitch('Z');
+  pros::Distance d_front(4); 
+  pros::Distance d_left(3); // checked
+  pros::Optical o_colorSort(8); // checked
+  pros::Optical o_crossed(17); 
+  pros::adi::DigitalIn autonSwitch('H'); // checked
 } // namspace Sensor
 
 namespace Piston{
-  pros::adi::DigitalOut loader('Z'); 
-  pros::adi::DigitalOut clamp('Z'); 
-  pros::adi::DigitalOut park('Z'); 
-  pros::adi::DigitalOut goal('Z'); 
+  pros::adi::DigitalOut loader('B'); // checked
+  pros::adi::DigitalOut clamp('G'); // checked
+  pros::adi::DigitalOut aligner('C'); // checked
+  pros::adi::DigitalOut hook('D'); // checked
+  pros::adi::DigitalOut middle('E'); // checked
 } // namespace Piston
 
 // <------------------------------------------------------------- Odom Sensors ------------------------------------------------------------->
@@ -45,7 +46,8 @@ class CustomIMU : public pros::IMU {
     const double m_scalar;
 };
 
-CustomIMU s_imu(7, 1.00528659218); // checked
+// CustomIMU s_imu(9, 1.00528659218); // checked
+CustomIMU s_imu(9, 1.01152008991); // checked
 // CustomIMU s_imu(7, 1.0); // checked
 
 pros::Rotation horizontalEnc(21);

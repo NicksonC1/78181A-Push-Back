@@ -26,8 +26,9 @@ namespace Sensor{
 namespace Piston{
     extern pros::adi::DigitalOut loader;
     extern pros::adi::DigitalOut clamp;
-    extern pros::adi::DigitalOut park;
-    extern pros::adi::DigitalOut goal;
+    extern pros::adi::DigitalOut aligner;
+    extern pros::adi::DigitalOut hook;
+    extern pros::adi::DigitalOut middle;
 } // namespace Piston
 
 class CustomIMU : public pros::IMU {

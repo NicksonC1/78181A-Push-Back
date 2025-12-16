@@ -25,8 +25,6 @@ namespace Sensor{
 
 namespace Piston{
   pros::adi::DigitalOut loader('B'); // checked
-  pros::adi::DigitalOut clamp('G'); // checked
-  pros::adi::DigitalOut aligner('C'); // checked
   pros::adi::DigitalOut hook('D'); // checked
   pros::adi::DigitalOut middle('E'); // checked
 } // namespace Piston

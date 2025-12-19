@@ -487,9 +487,9 @@ namespace Auton{
             chassis.turnToPoint(65,49.2,750,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1.5});
             chassis.waitUntilDone();
             
-            Misc::cdrift(45,45,550);
+            Misc::cdrift(45,45,500);
             Misc::cdrift(-20,-20,200);
-            Misc::cdrift(35,35,400);
+            Misc::cdrift(35,35,450);
 
             chassis.moveToPoint(30,49.5,950,{.forwards=false,.maxSpeed=85,.minSpeed=0,.earlyExitRange=3});
             chassis.waitUntilDone();
@@ -527,7 +527,7 @@ namespace Auton{
             // Motor::intakeU.move(55);
             // Piston::middle.set_value(true);
             Misc::cdrift(-30,-30,150);
-            Misc::cdrift(-10,-10,490);
+            Misc::cdrift(-10,-10,600);
             // Misc::cdrift(20,85,350);
             Piston::middle.set_value(false);
             Motor::intakeU.brake();

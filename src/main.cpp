@@ -369,7 +369,7 @@ namespace Auton{
             chassis.waitUntilDone();
             chassis.turnToPoint(58,41,400,{.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
             // chassis.moveToPoint(63,-45,400,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1});
-            chassis.moveToPose(65,47,90,1500,{.forwards=true,.horizontalDrift=8,.lead=0.44,.maxSpeed=85,.minSpeed=0,.earlyExitRange=0});
+            chassis.moveToPose(65,47,90,1500,{.forwards=true,.horizontalDrift=8,.lead=0.45,.maxSpeed=80,.minSpeed=0,.earlyExitRange=0});
             chassis.waitUntilDone();
             Misc::cdrift(30,30,350);
             Misc::cdrift(-20,-20,200);
@@ -378,10 +378,10 @@ namespace Auton{
             chassis.waitUntilDone();
             Motor::intakeF.move(-127); 
             Motor::intakeU.move(-127);
-            pros::delay(100);
+            pros::delay(110);
             Motor::intakeF.move(127);
             Motor::intakeU.move(127);
-            Misc::cdrift(-20,-20,1500);
+            Misc::cdrift(-20,-20,1700);
             Motor::intakeU.brake();
             Piston::loader.set_value(false);
 
@@ -473,20 +473,23 @@ namespace Auton{
             Motor::intakeF.move(127);
             Piston::hook.set_value(true);
             Misc::cdrift(50,50,500);
-            pros::delay(150);
+            // pros::delay(250);
+            Misc::cdrift(-10,-10,120);
+            Misc::cdrift(-20,-20,80);
+            
 
-            chassis.moveToPoint(48,46.5,1220,{.forwards=false,.maxSpeed=127,.minSpeed=0,.earlyExitRange=1.5});
+            chassis.moveToPoint(48,46.5,1200,{.forwards=false,.maxSpeed=127,.minSpeed=0,.earlyExitRange=1.5});
             chassis.waitUntilDone();
             // chassis.turnToHeading(270,1200,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
             // chassis.waitUntilDone();
             Piston::loader.set_value(true);
             pros::delay(100);
-            chassis.turnToPoint(65,49,750,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1.5});
+            chassis.turnToPoint(65,49.2,750,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1.5});
             chassis.waitUntilDone();
             
             Misc::cdrift(45,45,550);
             Misc::cdrift(-20,-20,200);
-            Misc::cdrift(35,35,600);
+            Misc::cdrift(35,35,400);
 
             chassis.moveToPoint(30,49.5,950,{.forwards=false,.maxSpeed=85,.minSpeed=0,.earlyExitRange=3});
             chassis.waitUntilDone();
@@ -499,18 +502,18 @@ namespace Auton{
             Piston::loader.set_value(false);
             Misc::cdrift(-20,-20,600);
             Motor::intakeU.brake();
-            Misc::cdrift(90,45,200);
-            chassis.moveToPoint(26,26,1250,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=3});
+            Misc::cdrift(95,55,200);
+            chassis.moveToPoint(28.2,26,1250,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=3});
             chassis.waitUntilDone();
             Misc::cdrift(-10,80,150);
-            chassis.moveToPoint(24,-25,1150,{.forwards=true,.maxSpeed=127,.minSpeed=0,.earlyExitRange=1});
+            chassis.moveToPoint(27.2,-24,1150,{.forwards=true,.maxSpeed=127,.minSpeed=0,.earlyExitRange=1});
             chassis.waitUntil(17);
             Piston::loader.set_value(true);
             chassis.waitUntilDone();
             Piston::loader.set_value(false);
 
 
-            chassis.moveToPoint(10,-6.2,750,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
+            chassis.moveToPoint(9,-5,750,{.forwards=false,.maxSpeed=80,.minSpeed=0,.earlyExitRange=3});
             chassis.waitUntilDone();
             Motor::intakeF.move(-127);
             Motor::intakeU.move(-127);
@@ -523,26 +526,30 @@ namespace Auton{
             // Motor::intakeF.move(127);
             // Motor::intakeU.move(55);
             // Piston::middle.set_value(true);
-            Misc::cdrift(-10,-10,600);
+            Misc::cdrift(-30,-30,150);
+            Misc::cdrift(-10,-10,490);
             // Misc::cdrift(20,85,350);
             Piston::middle.set_value(false);
             Motor::intakeU.brake();
 
 
-            chassis.moveToPoint(48,-46.2,1100,{.forwards=true,.maxSpeed=127,.minSpeed=0,.earlyExitRange=1});
+            chassis.moveToPoint(48,-45.5,1100,{.forwards=true,.maxSpeed=127,.minSpeed=0,.earlyExitRange=1.5});
             chassis.waitUntilDone();
             // chassis.turnToHeading(270,1200,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
             // chassis.waitUntilDone();
             Piston::loader.set_value(true);
             pros::delay(100);
-            chassis.turnToPoint(65,-47.2,700,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=2});
+            chassis.turnToPoint(65,-46.2,700,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=2});
             chassis.waitUntilDone();
+            Misc::cdrift(45,45,850);
+            // Misc::cdrift(-20,-20,200);
+            // Misc::cdrift(35,35,590);
             
-            Misc::cdrift(50,50,550);
-            Misc::cdrift(-20,-20,200);
-            Misc::cdrift(35,35,590);
+            // Misc::cdrift(50,50,550);
+            // Misc::cdrift(-20,-20,200);
+            // Misc::cdrift(35,35,590);
 
-            chassis.moveToPoint(30,-48,950,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
+            chassis.moveToPoint(30,-46.7,950,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
             chassis.waitUntilDone();
             Motor::intakeF.move(-127); 
             Motor::intakeU.move(-127);

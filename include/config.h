@@ -10,13 +10,15 @@ extern pros::MotorGroup leftMotors;
 extern pros::MotorGroup rightMotors;
 
 namespace Motor{
-    extern pros::Motor intakeF;
-    extern pros::Motor intakeU;
+    extern pros::Motor intake1;
+    extern pros::Motor intake2;
+    extern pros::MotorGroup intake;
 } // namespace Motor
 
 namespace Sensor{
     extern pros::Distance d_front;
     extern pros::Distance d_left;
+    extern pros::Distance d_right;
     // extern pros::Distance d_filled;
     extern pros::Optical o_colorSort;
     extern pros::Optical o_crossed;
@@ -26,7 +28,9 @@ namespace Sensor{
 namespace Piston{
     extern pros::adi::DigitalOut loader;
     extern pros::adi::DigitalOut hook;
-    extern pros::adi::DigitalOut middle;
+    extern pros::adi::DigitalOut state1;
+    extern pros::adi::DigitalOut state2;
+    extern pros::adi::DigitalOut middle; //TBD
 } // namespace Piston
 
 class CustomIMU : public pros::IMU {
@@ -44,8 +48,8 @@ extern CustomIMU s_imu;
 extern pros::Rotation horizontalEnc;
 extern pros::Rotation verticalEnc;
 
-// extern genesis::TrackingWheel horizontal;
-// extern genesis::TrackingWheel vertical;
+extern genesis::TrackingWheel horizontal;
+extern genesis::TrackingWheel vertical;
 // extern genesis::Drivetrain drivetrain;
 // extern genesis::ControllerSettings linearController;
 // extern genesis::ControllerSettings angularController;

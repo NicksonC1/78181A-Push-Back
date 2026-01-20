@@ -27,7 +27,7 @@ namespace Sensor{
 
 namespace Piston{
   pros::adi::DigitalOut loader('F'); 
-  pros::adi::DigitalOut hook('X');
+  pros::adi::DigitalOut hook('G');
   pros::adi::DigitalOut state1('B'); // checked
   pros::adi::DigitalOut state2('H'); // checked
   pros::adi::DigitalOut middle('X'); 

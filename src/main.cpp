@@ -86,6 +86,7 @@ namespace Misc{
     pros::motor_brake_mode_e_t brakeStateI = pros::E_MOTOR_BRAKE_COAST;
     int val = 0;
     bool turningRed = false;
+    enum class FieldSide { AUTO, POS_Y, POS_X, NEG_Y, NEG_X };
     void led(){
         while(1){
             Sensor::o_colorSort.set_integration_time(5);
@@ -148,178 +149,352 @@ namespace Misc{
             chassis.moveToPoint(newX, newY, timeout, {.forwards=false, .maxSpeed=maxSpeed, .minSpeed=minspeed, .earlyExitRange=exit});
         }
     }
-    void reset() {
+    // void reset() {
+    //     constexpr double field = 144.0;
+    //     constexpr double halfField = field / 2.0;
+    //     constexpr double offsetF = 10.0;
+    //     constexpr double offsetR = -4.0;
+
+    //     double heading = s_imu.get_heading();
+    //     double theta = heading * M_PI / 180.0;
+
+    //     double d_front = Sensor::d_front.get_distance() / 25.4;
+    //     double d_left = Sensor::d_left.get_distance() / 25.4;
+
+    //     double x = (d_left - halfField) - (offsetR * cos(theta)) - (offsetF * sin(theta));
+    //     double y = (halfField - d_front) - (offsetF * cos(theta)) + (offsetR * sin(theta));
+
+    //     chassis.setPose(x, y, heading);
+
+    //     printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, heading);
+    // }
+    // void reset2(int sign) {
+    //     constexpr double offsetR = -13.0;
+    //     double d_left = Sensor::d_left.get_distance() / 25.4;
+    //     double x = chassis.getPose().x;
+    //     double heading = chassis.getPose().theta;
+    //     double y = sign * ((72.0 - d_left) + offsetR);
+    //     chassis.setPose(x, y, heading);
+    // }
+
+    // void resetB1() {
+    //     constexpr double field = 144.0;
+    //     constexpr double halfField = field / 2.0;
+
+    //     constexpr double offsetF = 3.0;  // forward from robot center
+    //     constexpr double offsetR = 6.0;  // right from robot center
+
+    //     // Distance sensors (inches)
+    //     double d_back  = Sensor::d_front.get_distance() / 25.4;
+    //     double d_right = Sensor::d_left.get_distance() / 25.4;
+
+    //     // Heading is assumed to be 0 degrees (robot squared to walls)
+    //     double heading = s_imu.get_heading();
+
+    //     double x = (halfField - d_right) - offsetR;
+    //     double y = (halfField - d_back)  - offsetF;
+
+    //     chassis.setPose(x, y, heading);
+
+    //     printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, heading);
+    // }
+
+
+    // void resetB2() {
+    //     constexpr double field = 144.0;
+    //     constexpr double halfField = field / 2.0;
+
+    //     constexpr double offsetF = -3.0; // sensor behind center
+    //     constexpr double offsetR = -6.0; // sensor left of center
+
+    //     // Distance sensors (inches)
+    //     double d_back  = Sensor::d_front.get_distance() / 25.4;
+    //     double d_right = Sensor::d_left.get_distance() / 25.4;
+
+    //     // Assumed squared to walls
+    //     double heading = s_imu.get_heading();
+
+    //     double x = (-halfField + d_right) - offsetR;
+    //     double y = (-halfField + d_back)  - offsetF;
+
+    //     chassis.setPose(x, y, heading);
+
+    //     printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, heading);
+    // }
+
+    // void resetLRB(bool useLeft = true, bool useRight = true, FieldSide facing = FieldSide::AUTO) {
+    //     constexpr double field = 144.0;
+    //     constexpr double halfField = field / 2.0;
+    //     // Sensor offsets from robot center (inches). Tune for your build.
+    //     // Left/right distance sensors face sideways, so only lateral offsets apply.
+    //     constexpr double leftOffsetR = -7.1;
+    //     constexpr double rightOffsetR = 7.1;
+    //     constexpr double frontOffsetF = 9.0;
+    //     constexpr double frontOffsetR = 0.0;
+
+    //     // Range gate (inches) and angle tolerance for usable readings.
+    //     constexpr double minRangeIn = 1.0;
+    //     constexpr double maxRangeIn = 70.0;
+    //     constexpr double angleTol = 15.0 * (M_PI / 180.0);
+    //     constexpr double mmToIn = 1.0 / 25.4;
+
+    //     double heading = s_imu.get_heading();
+    //     double theta = heading * M_PI / 180.0;
+
+    //     int32_t d_left_mm = Sensor::d_left.get_distance();
+    //     int32_t d_right_mm = Sensor::d_right.get_distance();
+    //     int32_t d_front_mm = Sensor::d_front.get_distance();
+
+    //     enum class Axis { NONE, X, Y };
+    //     struct AxisResult {
+    //         Axis axis;
+    //         double position;
+    //         bool valid;
+    //     };
+
+    //     auto inRangeIn = [=](double in) { return in >= minRangeIn && in <= maxRangeIn; };
+
+    //     auto sensorResult = [&](double readingIn, double offsetF, double offsetR, double offsetTheta) -> AxisResult {
+    //         if (!inRangeIn(readingIn)) return {Axis::NONE, 0.0, false};
+
+    //         double sensorOffsetX = offsetF * sin(theta) + offsetR * cos(theta);
+    //         double sensorOffsetY = offsetF * cos(theta) - offsetR * sin(theta);
+    //         double sensorAngle = theta + offsetTheta;
+
+    //         double angleError = std::fabs(std::remainder(0.0 - sensorAngle, 2 * M_PI));
+    //         if (angleError < angleTol) {
+    //             double pos = (halfField - readingIn * cos(angleError)) - sensorOffsetY;
+    //             return {Axis::Y, pos, true};
+    //         }
+    //         angleError = std::fabs(std::remainder(M_PI_2 - sensorAngle, 2 * M_PI));
+    //         if (angleError < angleTol) {
+    //             double pos = (halfField - readingIn * cos(angleError)) - sensorOffsetX;
+    //             return {Axis::X, pos, true};
+    //         }
+    //         angleError = std::fabs(std::remainder(M_PI - sensorAngle, 2 * M_PI));
+    //         if (angleError < angleTol) {
+    //             double pos = (-halfField + readingIn * cos(angleError)) - sensorOffsetY;
+    //             return {Axis::Y, pos, true};
+    //         }
+    //         angleError = std::fabs(std::remainder(1.5 * M_PI - sensorAngle, 2 * M_PI));
+    //         if (angleError < angleTol) {
+    //             double pos = (-halfField + readingIn * cos(angleError)) - sensorOffsetX;
+    //             return {Axis::X, pos, true};
+    //         }
+
+    //         return {Axis::NONE, 0.0, false};
+    //     };
+
+    //     double x = estimatedX;
+    //     double y = estimatedY;
+    //     double xSum = 0.0;
+    //     double ySum = 0.0;
+    //     int xCount = 0;
+    //     int yCount = 0;
+
+    //     AxisResult leftRes = {Axis::NONE, 0.0, false};
+    //     AxisResult rightRes = {Axis::NONE, 0.0, false};
+    //     if (useLeft) leftRes = sensorResult(d_left_mm * mmToIn, 0.0, leftOffsetR, -M_PI_2);
+    //     if (useRight) rightRes = sensorResult(d_right_mm * mmToIn, 0.0, rightOffsetR, M_PI_2);
+    //     AxisResult frontRes = sensorResult(d_front_mm * mmToIn, frontOffsetF, frontOffsetR, 0.0);
+
+    //     auto accumulate = [&](const AxisResult& res) {
+    //         if (!res.valid) return;
+    //         if (res.axis == Axis::X) {
+    //             xSum += res.position;
+    //             xCount++;
+    //         } else if (res.axis == Axis::Y) {
+    //             ySum += res.position;
+    //             yCount++;
+    //         }
+    //     };
+
+    //     accumulate(leftRes);
+    //     accumulate(rightRes);
+    //     accumulate(frontRes);
+
+    //     if (xCount > 0) x = xSum / static_cast<double>(xCount);
+    //     if (yCount > 0) y = ySum / static_cast<double>(yCount);
+    //     if (facing == FieldSide::NEG_X || facing == FieldSide::POS_X) std::swap(x, y);
+
+    //     double outputHeading = chassis.getPose().theta;
+    //     chassis.setPose(x, y, outputHeading);
+
+    //     printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, outputHeading);
+    // }
+
+    struct PoseSampleParams {
+        double refX = std::numeric_limits<double>::quiet_NaN();
+        double refY = std::numeric_limits<double>::quiet_NaN();
+        double radiusIn = 8.0;
+    };
+
+    static bool poseWithinRadius(double x, double y, double refX, double refY, double radiusIn) {
+        if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(refX) || !std::isfinite(refY)) return false;
+        const double dx = x - refX;
+        const double dy = y - refY;
+        return (dx * dx + dy * dy) <= (radiusIn * radiusIn);
+    }
+
+    static void applyPoseFallback(double& x, double& y, double estimateX, double estimateY, const PoseSampleParams& params) {
+        const double refX = std::isfinite(params.refX) ? params.refX : estimateX;
+        const double refY = std::isfinite(params.refY) ? params.refY : estimateY;
+        const double radiusIn = std::isfinite(params.radiusIn) ? params.radiusIn : 0.0;
+        if (radiusIn <= 0.0 || !poseWithinRadius(x, y, refX, refY, radiusIn)) {
+            x = refX;
+            y = refY;
+        }
+    }
+
+    void resetWalls(bool useLeft = true, bool useRight = true, bool useFront = true, PoseSampleParams sampleParams = PoseSampleParams{}) {
         constexpr double field = 144.0;
         constexpr double halfField = field / 2.0;
-        constexpr double offsetF = 10.0;
-        constexpr double offsetR = -4.0;
+        constexpr double WALL_0_X = halfField;
+        constexpr double WALL_1_Y = halfField;
+        constexpr double WALL_2_X = -halfField;
+        constexpr double WALL_3_Y = -halfField;
+        constexpr double ANGLE_TOLERANCE = 15.0 * (M_PI / 180.0);
+        constexpr double pi = M_PI;
+        constexpr double mmToIn = 1.0 / 25.4;
 
-        double heading = s_imu.get_heading();
-        double theta = heading * M_PI / 180.0;
-
-        double d_front = Sensor::d_front.get_distance() / 25.4;
-        double d_left = Sensor::d_left.get_distance() / 25.4;
-
-        double x = (d_left - halfField) - (offsetR * cos(theta)) - (offsetF * sin(theta));
-        double y = (halfField - d_front) - (offsetF * cos(theta)) + (offsetR * sin(theta));
-
-        chassis.setPose(x, y, heading);
-
-        printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, heading);
-    }
-    void reset2(int sign) {
-        constexpr double offsetR = -13.0;
-        double d_left = Sensor::d_left.get_distance() / 25.4;
-        double x = chassis.getPose().x;
-        double heading = chassis.getPose().theta;
-        double y = sign * ((72.0 - d_left) + offsetR);
-        chassis.setPose(x, y, heading);
-    }
-
-    void resetB1() {
-        constexpr double field = 144.0;
-        constexpr double halfField = field / 2.0;
-
-        constexpr double offsetF = 3.0;  // forward from robot center
-        constexpr double offsetR = 6.0;  // right from robot center
-
-        // Distance sensors (inches)
-        double d_back  = Sensor::d_front.get_distance() / 25.4;
-        double d_right = Sensor::d_left.get_distance() / 25.4;
-
-        // Heading is assumed to be 0 degrees (robot squared to walls)
-        double heading = s_imu.get_heading();
-
-        double x = (halfField - d_right) - offsetR;
-        double y = (halfField - d_back)  - offsetF;
-
-        chassis.setPose(x, y, heading);
-
-        printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, heading);
-    }
-
-
-    void resetB2() {
-        constexpr double field = 144.0;
-        constexpr double halfField = field / 2.0;
-
-        constexpr double offsetF = -3.0; // sensor behind center
-        constexpr double offsetR = -6.0; // sensor left of center
-
-        // Distance sensors (inches)
-        double d_back  = Sensor::d_front.get_distance() / 25.4;
-        double d_right = Sensor::d_left.get_distance() / 25.4;
-
-        // Assumed squared to walls
-        double heading = s_imu.get_heading();
-
-        double x = (-halfField + d_right) - offsetR;
-        double y = (-halfField + d_back)  - offsetF;
-
-        chassis.setPose(x, y, heading);
-
-        printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, heading);
-    }
-
-    void resetLRB(bool useLeft = true, bool useRight = true) {
-        constexpr double field = 144.0;
-        constexpr double halfField = field / 2.0;
-        // Sensor offsets from robot center (inches). Tune for your build.
-        // Left/right distance sensors face sideways, so only lateral offsets apply.
-        constexpr double leftOffsetR = -7.0;
-        constexpr double rightOffsetR = 7.0;
+        constexpr double leftOffsetR = -7.1;
+        constexpr double rightOffsetR = 7.1;
         constexpr double frontOffsetF = 9.0;
         constexpr double frontOffsetR = 0.0;
 
-        // Range gate (inches) and angle tolerance for usable readings.
-        constexpr double minRangeIn = 1.0;
-        constexpr double maxRangeIn = 70.0;
-        constexpr double angleTol = 15.0 * (M_PI / 180.0);
-        constexpr double mmToIn = 1.0 / 25.4;
-
-        double heading = s_imu.get_heading();
-        double theta = heading * M_PI / 180.0;
-        double thetaStd = M_PI_2 - theta;
-
-        int32_t d_left_mm = Sensor::d_left.get_distance();
-        int32_t d_right_mm = Sensor::d_right.get_distance();
-        int32_t d_front_mm = Sensor::d_front.get_distance();
-
         enum class Axis { NONE, X, Y };
-        struct AxisResult {
+        struct Result {
             Axis axis;
-            double position;
-            bool valid;
+            double axisPosition;
         };
 
-        auto inRangeIn = [=](double in) { return in >= minRangeIn && in <= maxRangeIn; };
+        genesis::Pose m_offset(0.0, 0.0, 0.0);
+        double realReading = 0.0;
 
-        auto sensorResult = [&](double readingIn, double offsetF, double offsetR, double offsetThetaStd) -> AxisResult {
-            if (!inRangeIn(readingIn)) return {Axis::NONE, 0.0, false};
+        auto getReading = [&](genesis::Pose pose, Result& result, bool force) {
+            // determine sensor pose
+            double sensorAngle = pose.theta + m_offset.theta;
+            double sensorOffsetX = m_offset.x * std::cos(pose.theta) - m_offset.y * std::sin(pose.theta);
+            double sensorOffsetY = m_offset.x * std::sin(pose.theta) + m_offset.y * std::cos(pose.theta);
+            double sensorX = pose.x + sensorOffsetX;
+            double sensorY = pose.y + sensorOffsetY;
 
-            double sensorOffsetX = offsetF * sin(theta) + offsetR * cos(theta);
-            double sensorOffsetY = offsetF * cos(theta) - offsetR * sin(theta);
-            double sensorAngle = thetaStd + offsetThetaStd;
+            // determine predicted reading
+            double predictedReading;
+            double angleError;
+            int wall;
 
-            double angleError = std::fabs(std::remainder(0.0 - sensorAngle, 2 * M_PI));
-            if (angleError < angleTol) {
-                double pos = (halfField - readingIn * cos(angleError)) - sensorOffsetX;
-                return {Axis::X, pos, true};
-            }
-            angleError = std::fabs(std::remainder(M_PI_2 - sensorAngle, 2 * M_PI));
-            if (angleError < angleTol) {
-                double pos = (halfField - readingIn * cos(angleError)) - sensorOffsetY;
-                return {Axis::Y, pos, true};
-            }
-            angleError = std::fabs(std::remainder(M_PI - sensorAngle, 2 * M_PI));
-            if (angleError < angleTol) {
-                double pos = (-halfField + readingIn * cos(angleError)) - sensorOffsetX;
-                return {Axis::X, pos, true};
-            }
-            angleError = std::fabs(std::remainder(1.5 * M_PI - sensorAngle, 2 * M_PI));
-            if (angleError < angleTol) {
-                double pos = (-halfField + readingIn * cos(angleError)) - sensorOffsetY;
-                return {Axis::Y, pos, true};
+            if (angleError = std::abs(std::remainder(0 - sensorAngle, 2 * pi)); angleError < ANGLE_TOLERANCE) {
+                predictedReading = (WALL_0_X - sensorX) / std::cos(angleError);
+                wall = 0;
+            } else if (angleError = std::abs(std::remainder(0.5 * pi - sensorAngle, 2 * pi)); angleError < ANGLE_TOLERANCE) {
+                predictedReading = (WALL_1_Y - sensorY) / std::cos(angleError);
+                wall = 1;
+            } else if (angleError = std::abs(std::remainder(pi - sensorAngle, 2 * pi)); angleError < ANGLE_TOLERANCE) {
+                predictedReading = (sensorX - WALL_2_X) / std::cos(angleError);
+                wall = 2;
+            } else if (angleError = std::abs(std::remainder(1.5 * pi - sensorAngle, 2 * pi)); angleError < ANGLE_TOLERANCE) {
+                predictedReading = (sensorY - WALL_3_Y) / std::cos(angleError);
+                wall = 3;
+            } else {
+                wall = -1;
             }
 
-            return {Axis::NONE, 0.0, false};
+            // determine the new position on the axis based on distance sensor readings
+            if (wall == 0) {
+                result.axis = Axis::X;
+                result.axisPosition = (WALL_0_X - realReading * std::cos(angleError)) - sensorOffsetX;
+            } else if (wall == 1) {
+                result.axis = Axis::Y;
+                result.axisPosition = (WALL_1_Y - realReading * std::cos(angleError)) - sensorOffsetY;
+            } else if (wall == 2) {
+                result.axis = Axis::X;
+                result.axisPosition = (WALL_2_X + realReading * std::cos(angleError)) - sensorOffsetX;
+            } else if (wall == 3) {
+                result.axis = Axis::Y;
+                result.axisPosition = (WALL_3_Y + realReading * std::cos(angleError)) - sensorOffsetY;
+            }
         };
 
-        double x = chassis.getPose().x;
-        double y = chassis.getPose().y;
+        genesis::Pose pose = chassis.getPose(true, true);
+        double heading = chassis.getPose().theta;
+        const double estimatedX = pose.x;
+        const double estimatedY = pose.y;
+
+        Result leftRes = {Axis::NONE, 0.0};
+        Result rightRes = {Axis::NONE, 0.0};
+        Result frontRes = {Axis::NONE, 0.0};
+
+        if (useLeft) {
+            m_offset = genesis::Pose(0.0, -leftOffsetR, M_PI_2);
+            realReading = Sensor::d_left.get_distance() * mmToIn;
+            getReading(pose, leftRes, false);
+        }
+        if (useRight) {
+            m_offset = genesis::Pose(0.0, -rightOffsetR, -M_PI_2);
+            realReading = Sensor::d_right.get_distance() * mmToIn;
+            getReading(pose, rightRes, false);
+        }
+        if (useFront) {
+            m_offset = genesis::Pose(frontOffsetF, -frontOffsetR, 0.0);
+            realReading = Sensor::d_front.get_distance() * mmToIn;
+            getReading(pose, frontRes, false);
+        }
+
+        double x = estimatedX;
+        double y = estimatedY;
         double xSum = 0.0;
         double ySum = 0.0;
         int xCount = 0;
         int yCount = 0;
 
-        AxisResult leftRes = {Axis::NONE, 0.0, false};
-        AxisResult rightRes = {Axis::NONE, 0.0, false};
-        if (useLeft) leftRes = sensorResult(d_left_mm * mmToIn, 0.0, leftOffsetR, M_PI_2);
-        if (useRight) rightRes = sensorResult(d_right_mm * mmToIn, 0.0, rightOffsetR, -M_PI_2);
-        AxisResult frontRes = sensorResult(d_front_mm * mmToIn, frontOffsetF, frontOffsetR, 0.0);
-
-        auto accumulate = [&](const AxisResult& res) {
-            if (!res.valid) return;
+        auto accumulate = [&](const Result& res) {
+            if (!std::isfinite(res.axisPosition)) return;
             if (res.axis == Axis::X) {
-                xSum += res.position;
+                xSum += res.axisPosition;
                 xCount++;
             } else if (res.axis == Axis::Y) {
-                ySum += res.position;
+                ySum += res.axisPosition;
                 yCount++;
             }
         };
 
-        accumulate(leftRes);
-        accumulate(rightRes);
-        accumulate(frontRes);
+        if (useLeft) accumulate(leftRes);
+        if (useRight) accumulate(rightRes);
+        if (useFront) accumulate(frontRes);
 
         if (xCount > 0) x = xSum / static_cast<double>(xCount);
         if (yCount > 0) y = ySum / static_cast<double>(yCount);
+
+        applyPoseFallback(x, y, estimatedX, estimatedY, sampleParams);
 
         chassis.setPose(x, y, heading);
 
         printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, heading);
     }
+
+    // void resetFinal(PoseSampleParams sampleParams = PoseSampleParams{}) {
+    //     constexpr double field = 144.0;
+    //     constexpr double halfField = field / 2.0;
+    //     constexpr double offsetF = 9.0;
+    //     constexpr double offsetR = 5.0;
+
+    //     const genesis::Pose estimatePose = chassis.getPose();
+    //     double heading = s_imu.get_heading();
+    //     double theta = heading * M_PI / 180.0;
+
+    //     double d_front = Sensor::d_front.get_distance() / 25.4;
+    //     double d_right = Sensor::d_right.get_distance() / 25.4;
+
+    //     double x = (d_front - halfField) + (offsetR * cos(theta)) - (offsetF * sin(theta)) + 4;
+    //     double y = (halfField - d_right) - (offsetF * cos(theta)) + (offsetR * sin(theta));
+
+    //     applyPoseFallback(x, y, estimatePose.x, estimatePose.y, sampleParams);
+
+    //     chassis.setPose(x, y, estimatePose.theta);
+
+    //     printf("Pose -> X: %.2f, Y: %.2f, Heading: %.2f\n", x, y, heading);
+    // }
 
 
     int curve(int input, double t = 5, bool activated = true) {
@@ -424,7 +599,7 @@ namespace Intake{
                 state2Value = false;
                 break;
             case State::MIDDLE:
-                voltage = 127;
+                voltage = 75;
                 state1Value = false;
                 state2Value = false;
                 break;
@@ -448,6 +623,8 @@ namespace Intake{
 }
 ASSET(middle_txt); // PP
 ASSET(long1_txt); // PP
+ASSET(long2_txt); // PP
+ASSET(park_txt); // PP
 // <-------------------------------------------------------------- Auto Routes ----------------------------------------------------------->
 namespace Auton{
     int state = 0;
@@ -1002,36 +1179,61 @@ namespace Auton{
             chassis.setPose(-50,0,270);
             Piston::hook.set_value(true);
             Intake::setState(Intake::State::LOCK);
-            Misc::cdrift(55,55,1200);
-            Misc::cdrift(-30,-30,300);
+            Misc::cdrift(50,51,1200);
+            Misc::cdrift(-40,-40,300);
+            Misc::cdrift(50,50,600);
+            // Misc::cdrift(-40,-40,300);
+            // Misc::cdrift(50,50,600);
+            Misc::cdrift(-80,-80,1000);
+            Misc::cdrift(-10,-10,100);
+            Misc::cdrift(30,30,100);
             Misc::cdrift(55,55,600);
-            Misc::cdrift(-45,-45,1200);
+            // Piston::loader.set_value(true);
             chassis.turnToHeading(270,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
             chassis.waitUntilDone();
-            Misc::resetLRB(false,true);
-            chassis.follow(middle_txt, 5, 2500, false);
-            chassis.waitUntilDone();
-            chassis.turnToHeading(315,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
-            chassis.waitUntilDone();
-            Misc::cdrift(25,25,350);
+            pros::delay(200);
             
-            Misc::cdrift(-35,-35,400);
-            Intake::setState(Intake::State::LOCK);
-            Misc::cdrift(-35,-35,2500);
+            // Piston::loader.set_value(false);
+            // pros::delay(150);
+            Misc::resetWalls(true,true,true,{-46,1,5});
+            // Misc::resetWalls(false,true,true);
+            pros::delay(150);
+            // Misc::resetFinal();
+            // Misc::resetLRB(false,true,Misc::FieldSide::NEG_X);
+
+            // pros::delay(1000000000);
+            chassis.follow(middle_txt, 9, 1200, false);
+            chassis.waitUntilDone();
+            chassis.swingToHeading(315,genesis::DriveSide::LEFT,400,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            chassis.waitUntilDone();
+            Misc::cdrift(-30,-30,300);
+            chassis.turnToHeading(315,400,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            chassis.waitUntilDone();
+            Misc::cdrift(40,40,450);
+            pros::delay(250);
+            
+            Misc::cdrift(-45,-45,850);
+            Intake::setState(Intake::State::MIDDLE);
+            Misc::cdrift(-35,-35,3000);
+            Misc::cdrift(30,30,300);
+            Intake::setState(Intake::State::SPIT);
 
             // /*
-            chassis.moveToPoint(-48,46,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            chassis.moveToPoint(-48,43,1500,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
             chassis.waitUntilDone();
             // chassis.turnToHeading(270,1200,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
             // chassis.waitUntilDone();
             Piston::loader.set_value(true);
             pros::delay(100);
-            chassis.turnToPoint(-65,47,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            chassis.turnToPoint(-65,44.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
             chassis.waitUntilDone();
+            Intake::setState(Intake::State::LOCK);
             
-            Misc::cdrift(35,35,1500);
+            Misc::cdrift(30,30,2000);
+            Misc::cdrift(-15,-15,300);
+            Misc::cdrift(30,30,700);
 
-            chassis.follow(long1_txt, 10, 2500, false);
+            chassis.follow(long1_txt, 18, 2500, false);
             chassis.waitUntil(25);
             Piston::loader.set_value(false);
             chassis.waitUntilDone();
@@ -1045,17 +1247,19 @@ namespace Auton{
 
 
             chassis.turnToHeading(90,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
-            chassis.moveToPoint(20,49.5,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            chassis.moveToPoint(15,47,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
             chassis.waitUntilDone();
             Intake::setState(Intake::State::SCORE);
-            Misc::cdrift(-20,-20,1000);
+            Misc::cdrift(-20,-20,500);
             Piston::loader.set_value(true);
             Misc::cdrift(-20,-20,1500);
             Motor::intake2.brake();
+            Intake::setState(Intake::State::LOCK);
 
-            chassis.moveToPoint(46,49,1250,{.forwards=true,.maxSpeed=95,.minSpeed=0,.earlyExitRange=3});
+            chassis.moveToPoint(41,46.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
             chassis.waitUntilDone();
-            Misc::cdrift(35,35,1500);
+            Misc::cdrift(30,30,2000);
+            
             // Misc::cdrift(-20,-20,200);
             // Misc::cdrift(35,35,800);
             // Misc::cdrift(-20,-20,200);
@@ -1065,8 +1269,9 @@ namespace Auton{
             // // Misc::cdrift(-20,-20,200);
             // // Misc::cdrift(35,35,800);
 
-            chassis.moveToPoint(25,49,1250,{.forwards=false,.maxSpeed=85,.minSpeed=0,.earlyExitRange=1});
+            chassis.moveToPoint(15,47,1250,{.forwards=false,.maxSpeed=85,.minSpeed=0,.earlyExitRange=1});
             chassis.waitUntilDone();
+            Intake::setState(Intake::State::SCORE);
             // Motor::intake1.move(-127);
             // Motor::intake2.move(-127);
             // pros::delay(150);
@@ -1074,10 +1279,155 @@ namespace Auton{
             // Motor::intake2.move(127);
             Misc::cdrift(-20,-20,1000);
             Piston::loader.set_value(false);
-            Misc::cdrift(-20,-20,1500);
+            Misc::cdrift(-20,-20,1000);
             Motor::intake2.brake();
+            Intake::setState(Intake::State::LOCK);
 
             Misc::cdrift(90,45,200);
+            chassis.moveToPoint(27,4,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            // chassis.turnToHeading(90,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            // chassis.waitUntilDone();
+            // // Misc::cdrift(90,90,1500);
+            // // Misc::cdrift(50,51,400);
+            // // Misc::cdrift(-40,-40,300);
+            // // Misc::cdrift(50,50,600);
+            // // Misc::cdrift(-40,-40,300);
+            // // Misc::cdrift(50,50,600);
+            // // Misc::cdrift(-80,-80,1000);
+            // // Misc::cdrift(-10,-10,100);
+            // // Misc::cdrift(30,30,100);
+            // // Misc::cdrift(50,50,500);
+            // // // Piston::loader.set_value(true);
+            // // chassis.turnToHeading(90,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            // // chassis.waitUntilDone();
+            // pros::delay(200);
+
+            // Piston::loader.set_value(false);
+            // pros::delay(150);
+            // Misc::resetWalls(true,true,true,{46,1,5});
+            // Misc::resetWalls(true,true,true,{46,1,5});
+
+            // pros::delay(150);
+            // chassis.turnToPoint(20, -23, 1250, {.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            chassis.moveToPoint(6,-25,1250,{.forwards=true,.maxSpeed=80,.minSpeed=0,.earlyExitRange=1});
+            // chassis.waitUntilDone();
+            // pros::delay(100);
+
+
+            chassis.moveToPoint(25,-45.5,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=2});
+
+            chassis.turnToHeading(90,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            chassis.moveToPoint(13,-46,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            chassis.waitUntilDone();
+            Intake::setState(Intake::State::SCORE);
+            Misc::cdrift(-20,-20,200);
+            Piston::loader.set_value(true);
+            Misc::cdrift(-20,-20,700);
+            Motor::intake2.brake();
+            Intake::setState(Intake::State::LOCK);
+
+            chassis.moveToPoint(38,-46,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
+            chassis.waitUntilDone();
+            Misc::cdrift(30,30,1200);
+            chassis.setPose(57,-47,chassis.getPose().theta);
+            // Misc::resetWalls(false,true,true);
+            Misc::cdrift(30,30,700);
+            
+            // // Misc::cdrift(-20,-20,200);
+            // // Misc::cdrift(35,35,800);
+            // // Misc::cdrift(-20,-20,200);
+            // // Misc::cdrift(35,35,800);
+            // // Misc::cdrift(-20,-20,200);
+            // // Misc::cdrift(35,35,800);
+            // // // Misc::cdrift(-20,-20,200);
+            // // // Misc::cdrift(35,35,800);
+
+            // chassis.moveToPoint(15,-45.5,1250,{.forwards=false,.maxSpeed=85,.minSpeed=0,.earlyExitRange=1});
+            // chassis.waitUntilDone();
+            // Intake::setState(Intake::State::SCORE);
+            // // Motor::intake1.move(-127);
+            // // Motor::intake2.move(-127);
+            // // pros::delay(150);
+            // // Motor::intake1.move(127);
+            // // Motor::intake2.move(127);
+            // Misc::cdrift(-20,-20,1000);
+            // Piston::loader.set_value(false);
+            // Misc::cdrift(-20,-20,1000);
+            // Motor::intake2.brake();
+            // Intake::setState(Intake::State::LOCK);
+            // Misc::cdrift(70,70,100);
+            // Misc::cdrift(90,45,350);
+            // chassis.turnToHeading(240,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            // chassis.waitUntilDone();
+
+            chassis.follow(long2_txt, 17, 2500, false);
+            chassis.waitUntil(25);
+            Piston::loader.set_value(false);
+            chassis.waitUntilDone();
+
+
+            chassis.turnToHeading(270,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            chassis.moveToPoint(-17,-46.5,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            chassis.waitUntilDone();
+            Intake::setState(Intake::State::SCORE);
+            Misc::cdrift(-20,-20,1000);
+            Piston::loader.set_value(true);
+            Misc::cdrift(-20,-20,1000);
+            Motor::intake2.brake();
+            Intake::setState(Intake::State::LOCK);
+
+            chassis.moveToPoint(-43,-45.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
+            chassis.waitUntilDone();
+            Misc::cdrift(30,30,2300);
+            
+            // Misc::cdrift(-20,-20,200);
+            // Misc::cdrift(35,35,800);
+            // Misc::cdrift(-20,-20,200);
+            // Misc::cdrift(35,35,800);
+            // Misc::cdrift(-20,-20,200);
+            // Misc::cdrift(35,35,800);
+            // // Misc::cdrift(-20,-20,200);
+            // // Misc::cdrift(35,35,800);
+
+            chassis.moveToPoint(-17,-46.5,1250,{.forwards=false,.maxSpeed=85,.minSpeed=0,.earlyExitRange=1});
+            chassis.waitUntilDone();
+            Intake::setState(Intake::State::SCORE);
+            // Motor::intake1.move(-127);
+            // Motor::intake2.move(-127);
+            // pros::delay(150);
+            // Motor::intake1.move(127);
+            // Motor::intake2.move(127);
+            Misc::cdrift(-20,-20,1000);
+            Piston::loader.set_value(false);
+            Misc::cdrift(-20,-20,1000);
+            Motor::intake2.brake();
+            Intake::setState(Intake::State::LOCK);
+
+            Misc::cdrift(90,45,200);
+
+            chassis.turnToPoint(-10,-21,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            chassis.moveToPoint(-10,-21,1500,{.forwards=true,.maxSpeed=60,.minSpeed=0,.earlyExitRange=1});
+            chassis.waitUntilDone();
+            chassis.turnToHeading(45,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            chassis.waitUntilDone();
+            // chassis.turnToPoint(0,0,1250,{.forwards=true,.maxSpeed=70,.minSpeed=0,.earlyExitRange=1});
+            Intake::setState(Intake::State::SPIT);
+            Misc::cdrift(35,35,1200);
+            Intake::setState(Intake::State::LOCK);
+
+            chassis.moveToPoint(-30,1,1250,{.forwards=false,.maxSpeed=70,.minSpeed=0,.earlyExitRange=1});
+            chassis.turnToHeading(270,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            chassis.waitUntilDone();
+            Misc::cdrift(90,90,1500);
+            
+
+
+
+            // chassis.follow(park_txt, 12, 2500, true);
+
+
+
+
 
 
 
@@ -1241,10 +1591,12 @@ void initialize() {
 
     // lv_img_set_src(sixSeven, &sixseven);
 	// lv_obj_set_pos(sixSeven, 160, 0);
-
     pros::Task screenTask([&]() {
         while (1) {
-            // Misc::resetLRB(false,true);
+            // Misc::resetFinal();
+            // Misc::resetWalls(true,true,true,{-46,0,10});
+            // Misc::resetWalls(true,true,true,{46,1,5});
+            // Misc::resetWalls(false,true,true);
             pros::lcd::print(0, "X: %f", chassis.getPose().x);
             pros::lcd::print(1, "Y: %f", chassis.getPose().y);
             pros::lcd::print(2, "Theta: %f", chassis.getPose().theta);
@@ -1272,6 +1624,8 @@ void autonomous() {
     // chassis.turnToHeading(0,1500);
     // pros::delay(3000);
     Auton::Skills::cross();
+    // chassis.setPose(-43,0,270);
+    // chassis.follow(middle_txt, 9, 3000, false);
     pros::delay(1000000);
     // // TaskHandler::antiJam = true;
     // pros::Task antiJam([&](){ while(1) { Jam::antiJam(); pros::delay(Misc::DELAY); }});

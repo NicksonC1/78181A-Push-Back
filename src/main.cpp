@@ -14,6 +14,11 @@
 #include "pros/motors.h"
 #include "pros/rtos.hpp"
 
+ASSET(middle_txt); // PP
+ASSET(long1_txt); // PP
+ASSET(long2_txt); // PP
+ASSET(park_txt); // PP
+
 genesis::Drivetrain drivetrain(&leftMotors, // left motor group
                               &rightMotors, // right motor group
                               11.75, // 11.5 inch track width
@@ -520,7 +525,6 @@ namespace Misc{
     }
 } // namespace Misc
 
-
 // <-------------------------------------------------------------- Anti Jam ----------------------------------------------------------->
 namespace Jam{
     int counter = 0;
@@ -583,7 +587,7 @@ namespace Color {
 } // namespace Color
 
 namespace Intake{
-    enum class State { LOCK, MIDDLE, SCORE, SPIT };
+    enum class State { LOCK, MIDDLE, SCORE, SPIT, AUTON };
     State currentState = State::LOCK;
 
     void setState(State state){
@@ -603,6 +607,11 @@ namespace Intake{
                 state1Value = false;
                 state2Value = false;
                 break;
+            case State::AUTON:
+                voltage = 127;
+                state1Value = false;
+                state2Value = false;
+                break;
             case State::SCORE:
                 voltage = 127;
                 state1Value = true;
@@ -613,6 +622,7 @@ namespace Intake{
                 state1Value = true;
                 state2Value = true;
                 break;
+                
         }
         Motor::intake.move(voltage);
         // Motor::intake1.move(voltage);
@@ -621,10 +631,127 @@ namespace Intake{
         Piston::state2.set_value(state2Value);
     }
 }
-ASSET(middle_txt); // PP
-ASSET(long1_txt); // PP
-ASSET(long2_txt); // PP
-ASSET(park_txt); // PP
+
+// <-------------------------------------------------------------- Macro ----------------------------------------------------------->
+// namespace Macro {
+//     bool running = false;
+//     bool cancel = false;
+//     bool startRequested = false;
+
+//     void finish() {
+//         running = false;
+//         cancel = false;
+//         TaskHandler::driver = true;
+//     }
+
+//     bool begin() {
+//         if (running) return false;
+//         cancel = false;
+//         running = true;
+//         TaskHandler::driver = false;
+//         return true;
+//     }
+
+//     bool delay(int ms) {
+//         if (cancel) return false;
+//         int remaining = ms;
+//         while (remaining > 0) {
+//             if (cancel) return false;
+//             int step = std::min(remaining, Misc::DELAY);
+//             pros::delay(step);
+//             remaining -= step;
+//         }
+//         return !cancel;
+//     }
+
+//     bool waitUntilDone() {
+//         do {
+//             if (cancel) {
+//                 chassis.cancelAllMotions();
+//                 return false;
+//             }
+//             pros::delay(Misc::DELAY);
+//         } while (chassis.distTraveled != -1);
+//         return !cancel;
+//     }
+
+//     bool cdrift(float lV, float rV, int timeout, bool cst = true) {
+//         if (cancel) return false;
+//         (cst == true)
+//             ? (leftMotors.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST), rightMotors.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST))
+//             : (leftMotors.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE), rightMotors.set_brake_mode_all(pros::E_MOTOR_BRAKE_BRAKE));
+//         leftMotors.move(lV);
+//         rightMotors.move(rV);
+//         bool completed = delay(timeout);
+//         leftMotors.brake();
+//         rightMotors.brake();
+//         return completed;
+//     }
+
+//     void requestStart() {
+//         if (running || startRequested) return;
+//         startRequested = true;
+//     }
+
+//     void requestCancel() {
+//         if (!running) return;
+//         cancel = true;
+//         TaskHandler::driver = true;
+//         chassis.cancelAllMotions();
+//         leftMotors.brake();
+//         rightMotors.brake();
+//     }
+
+//     void runCrossMacro() {
+//         if (!begin()) return;
+
+//         chassis.setPose(-50,0,270);
+//         if (cancel) { finish(); return; }
+//         Piston::hook.set_value(true);
+//         Intake::setState(Intake::State::LOCK);
+//         if (!cdrift(50,51,1200)) { finish(); return; }
+//         if (!cdrift(-40,-40,300)) { finish(); return; }
+//         if (!cdrift(50,50,600)) { finish(); return; }
+//         // Misc::cdrift(-40,-40,300);
+//         // Misc::cdrift(50,50,600);
+//         if (!cdrift(-80,-80,900)) { finish(); return; }
+//         if (!cdrift(-10,-10,100)) { finish(); return; }
+//         if (!cdrift(30,30,100)) { finish(); return; }
+//         if (!cdrift(55,55,500)) { finish(); return; }
+//         // Piston::loader.set_value(true);
+//         chassis.turnToHeading(270,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+//         if (!waitUntilDone()) { finish(); return; }
+//         if (!delay(200)) { finish(); return; }
+        
+//         // Piston::loader.set_value(false);
+//         // pros::delay(150);
+//         Misc::resetWalls(true,true,true,{-46,1,5});
+//         // Misc::resetWalls(false,true,true);
+//         if (!delay(150)) { finish(); return; }
+//         // Misc::resetFinal();
+//         // Misc::resetLRB(false,true,Misc::FieldSide::NEG_X);
+
+//         // pros::delay(1000000000);
+//         chassis.follow(middle_txt, 9, 1200, false);
+//         if (!waitUntilDone()) { finish(); return; }
+//         chassis.swingToHeading(315,genesis::DriveSide::LEFT,400,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+//         if (!waitUntilDone()) { finish(); return; }
+
+//         finish();
+//     }
+
+//     void task() {
+//         while (1) {
+//             if (startRequested && !running) {
+//                 startRequested = false;
+//                 runCrossMacro();
+//             }
+//             pros::delay(Misc::DELAY);
+//         }
+//     }
+// } // namespace Macro
+
+
 // <-------------------------------------------------------------- Auto Routes ----------------------------------------------------------->
 namespace Auton{
     int state = 0;
@@ -878,6 +1005,95 @@ namespace Auton{
             Piston::loader.set_value(false);
             Misc::cdrift(-20,-20,500);
             // Motor::intake2.brake();
+        }
+
+        void wingAWP(){
+            chassis.setPose(53,18,0);
+            Intake::setState(Intake::State::LOCK);
+            Piston::hook.set_value(true);
+            chassis.moveToPoint(53,44,1200,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1.5});
+            chassis.waitUntil(15);
+            Piston::loader.set_value(true);
+            chassis.waitUntilDone();
+            Misc::cdrift(10,-10,50);
+            // chassis.turnToHeading(270,1200,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            // chassis.waitUntilDone();
+            // Piston::loader.set_value(true);
+            // pros::delay(100);
+            chassis.turnToPoint(65,47.4,800,{.forwards=true,.maxSpeed=127,.minSpeed=5,.earlyExitRange=1.5});
+            chassis.waitUntilDone();
+            Misc::cdrift(55,55,110);
+            
+            Misc::cdrift(40,40,670);
+            // Misc::cdrift(-20,-20,200);
+            // Misc::cdrift(35,35,450);
+
+            chassis.moveToPoint(32,49.2,950,{.forwards=false,.maxSpeed=85,.minSpeed=0,.earlyExitRange=3});
+            chassis.waitUntil(16);
+            Intake::setState(Intake::State::SCORE);
+            chassis.waitUntilDone();
+
+            // Intake::setState(Intake::State::SCORE);
+            Misc::cdrift(-20,-20,450);
+            Piston::loader.set_value(false);
+            Misc::cdrift(-20,-20,250);
+            Intake::setState(Intake::State::LOCK);
+            Misc::cdrift(95,55,200);
+            chassis.moveToPoint(26.2,26,1250,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=3});
+            chassis.waitUntilDone();
+            Misc::cdrift(-10,80,50);
+            chassis.moveToPoint(24,-19,1150,{.forwards=true,.maxSpeed=127,.minSpeed=15,.earlyExitRange=1.5});
+            chassis.waitUntilDone();
+            Misc::cdrift(-10,80,50);
+            // chassis.waitUntil(17);
+            // Piston::loader.set_value(true);
+            // chassis.waitUntilDone();
+            // Piston::loader.set_value(false);
+
+
+
+            chassis.moveToPoint(48,-43.5,1100,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=2});
+            chassis.waitUntilDone();
+            Misc::cdrift(10,20,50);
+            Misc::cdrift(-15,-10,50);
+
+            chassis.moveToPoint(30,-45.8,800,{.forwards=false,.maxSpeed=90,.minSpeed=10,.earlyExitRange=3});
+            chassis.waitUntil(13);
+            Intake::setState(Intake::State::SCORE);
+            
+            chassis.waitUntilDone();
+            Misc::cdrift(-20,-20,600);
+            Piston::loader.set_value(true);
+            Misc::cdrift(-20,-20,600);
+            Intake::setState(Intake::State::LOCK);
+
+            chassis.moveToPoint(55.5,-45.5,700,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=2});
+            chassis.waitUntilDone();
+            Misc::cdrift(45,45,700);
+            
+
+
+            chassis.moveToPoint(12,-2,1250,{.forwards=false,.maxSpeed=127,.minSpeed=0,.earlyExitRange=3}); // 7,4.5
+            chassis.waitUntil(24);
+            Piston::loader.set_value(false);
+            chassis.waitUntilDone();
+            
+            Intake::setState(Intake::State::AUTON);
+            Misc::cdrift(-35,-35,150);
+            Misc::cdrift(-10,-10,600);
+
+            Intake::setState(Intake::State::LOCK);
+            chassis.moveToPoint(33,-31.5,1250,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=3});
+            chassis.turnToHeading(88,600,{.maxSpeed=127,.minSpeed=10,.earlyExitRange=2});
+            chassis.waitUntilDone();
+            Piston::hook.set_value(false);
+            chassis.moveToPoint(21,-33,1750,{.forwards=false,.maxSpeed=127,.minSpeed=10,.earlyExitRange=2});
+            chassis.turnToHeading(125,800,{.maxSpeed=127,.minSpeed=0,.earlyExitRange=2});
+            chassis.waitUntilDone();
+            Misc::cdrift(0,-15);
+            chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
+
+
         }
         void leftMiddle(){
             chassis.setPose(48,-15,270);
@@ -1179,15 +1395,17 @@ namespace Auton{
             chassis.setPose(-50,0,270);
             Piston::hook.set_value(true);
             Intake::setState(Intake::State::LOCK);
-            Misc::cdrift(50,51,1200);
-            Misc::cdrift(-40,-40,300);
-            Misc::cdrift(50,50,600);
+            Misc::cdrift(35,35,1100);
+            Misc::cdrift(-30,-30,400);
+            Misc::cdrift(40,40,1100);
+            // Misc::cdrift(50,51,1200);
             // Misc::cdrift(-40,-40,300);
-            // Misc::cdrift(50,50,600);
-            Misc::cdrift(-80,-80,1000);
+            // Misc::cdrift(50,50,750);
+
+            Misc::cdrift(-80,-80,900);
             Misc::cdrift(-10,-10,100);
-            Misc::cdrift(30,30,100);
-            Misc::cdrift(55,55,600);
+            Misc::cdrift(30,30,150);
+            Misc::cdrift(55,55,550);
             // Piston::loader.set_value(true);
             chassis.turnToHeading(270,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
             chassis.waitUntilDone();
@@ -1214,23 +1432,44 @@ namespace Auton{
             
             Misc::cdrift(-45,-45,850);
             Intake::setState(Intake::State::MIDDLE);
-            Misc::cdrift(-35,-35,3000);
+            Misc::cdrift(-35,-35,3100);
             Misc::cdrift(30,30,300);
-            Intake::setState(Intake::State::SPIT);
+            Intake::setState(Intake::State::LOCK);
 
             // /*
             chassis.moveToPoint(-48,43,1500,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
             chassis.waitUntilDone();
+            chassis.turnToHeading(270,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+
+            chassis.moveToPoint(-16,47,1250,{.forwards=false,.maxSpeed=75,.minSpeed=0,.earlyExitRange=0});
+            chassis.waitUntilDone();
+            Intake::setState(Intake::State::SCORE);
+            Misc::cdrift(-20,-20,400);
+            Piston::loader.set_value(true);
+            Misc::cdrift(-20,-20,500);
+            Intake::setState(Intake::State::LOCK);
+            // Motor::intake2.brake();
+            
+
+
+
+
+
+
             // chassis.turnToHeading(270,1200,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
             // chassis.waitUntilDone();
-            Piston::loader.set_value(true);
-            pros::delay(100);
-            chassis.turnToPoint(-65,44.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            // Piston::loader.set_value(true);
+            // pros::delay(100);
+            chassis.moveToPoint(-49,45,1500,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            // chassis.waitUntil(5);
+            // Intake::setState(Intake::State::LOCK);
+            chassis.waitUntilDone();
+            chassis.turnToPoint(-65,45,300,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
             chassis.waitUntilDone();
             Intake::setState(Intake::State::LOCK);
             
-            Misc::cdrift(30,30,2000);
-            Misc::cdrift(-15,-15,300);
+            Misc::cdrift(31,31,1300);
+            // Misc::cdrift(-15,-15,300);
             Misc::cdrift(30,30,700);
 
             chassis.follow(long1_txt, 18, 2500, false);
@@ -1256,9 +1495,12 @@ namespace Auton{
             Motor::intake2.brake();
             Intake::setState(Intake::State::LOCK);
 
-            chassis.moveToPoint(41,46.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
+            chassis.moveToPoint(42,45.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
             chassis.waitUntilDone();
-            Misc::cdrift(30,30,2000);
+            Misc::cdrift(31,31,1300);
+            // Misc::cdrift(-15,-15,200);
+            Misc::cdrift(30,30,700);
+            // Misc::cdrift(30,30,2300);
             
             // Misc::cdrift(-20,-20,200);
             // Misc::cdrift(35,35,800);
@@ -1317,7 +1559,7 @@ namespace Auton{
             chassis.moveToPoint(25,-45.5,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=2});
 
             chassis.turnToHeading(90,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
-            chassis.moveToPoint(13,-46,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            chassis.moveToPoint(13,-46,1250,{.forwards=false,.maxSpeed=75,.minSpeed=0,.earlyExitRange=1});
             chassis.waitUntilDone();
             Intake::setState(Intake::State::SCORE);
             Misc::cdrift(-20,-20,200);
@@ -1326,12 +1568,17 @@ namespace Auton{
             Motor::intake2.brake();
             Intake::setState(Intake::State::LOCK);
 
-            chassis.moveToPoint(38,-46,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
+            chassis.moveToPoint(40.5,-46,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
             chassis.waitUntilDone();
-            Misc::cdrift(30,30,1200);
+            Misc::cdrift(31,31,1000);
             chassis.setPose(57,-47,chassis.getPose().theta);
-            // Misc::resetWalls(false,true,true);
-            Misc::cdrift(30,30,700);
+            Misc::cdrift(31,31,400);
+            // Misc::cdrift(-15,-15,200);
+            Misc::cdrift(30,30,600);
+            // Misc::cdrift(30,30,1500);
+            // chassis.setPose(57,-47,chassis.getPose().theta);
+            // // Misc::resetWalls(false,true,true);
+            // Misc::cdrift(30,30,800);
             
             // // Misc::cdrift(-20,-20,200);
             // // Misc::cdrift(35,35,800);
@@ -1376,9 +1623,11 @@ namespace Auton{
             Motor::intake2.brake();
             Intake::setState(Intake::State::LOCK);
 
-            chassis.moveToPoint(-43,-45.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
+            chassis.moveToPoint(-45,-45.5,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
             chassis.waitUntilDone();
-            Misc::cdrift(30,30,2300);
+            Misc::cdrift(31,31,1300);
+            // Misc::cdrift(-15,-15,200);
+            Misc::cdrift(30,30,700);
             
             // Misc::cdrift(-20,-20,200);
             // Misc::cdrift(35,35,800);
@@ -1405,20 +1654,20 @@ namespace Auton{
 
             Misc::cdrift(90,45,200);
 
-            chassis.turnToPoint(-10,-21,1250,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
-            chassis.moveToPoint(-10,-21,1500,{.forwards=true,.maxSpeed=60,.minSpeed=0,.earlyExitRange=1});
-            chassis.waitUntilDone();
-            chassis.turnToHeading(45,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
-            chassis.waitUntilDone();
-            // chassis.turnToPoint(0,0,1250,{.forwards=true,.maxSpeed=70,.minSpeed=0,.earlyExitRange=1});
-            Intake::setState(Intake::State::SPIT);
-            Misc::cdrift(35,35,1200);
-            Intake::setState(Intake::State::LOCK);
+            // chassis.turnToPoint(-10,-21,700,{.forwards=true,.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            // chassis.moveToPoint(-10,-21,1500,{.forwards=true,.maxSpeed=60,.minSpeed=0,.earlyExitRange=1});
+            // chassis.waitUntilDone();
+            // chassis.turnToHeading(47,400,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=1});
+            // chassis.waitUntilDone();
+            // // chassis.turnToPoint(0,0,1250,{.forwards=true,.maxSpeed=70,.minSpeed=0,.earlyExitRange=1});
+            // Intake::setState(Intake::State::SPIT);
+            // Misc::cdrift(40,40,1200);
+            // Intake::setState(Intake::State::LOCK);
 
-            chassis.moveToPoint(-30,1,1250,{.forwards=false,.maxSpeed=70,.minSpeed=0,.earlyExitRange=1});
-            chassis.turnToHeading(270,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=0});
+            chassis.moveToPoint(-28,1.5,1500,{.forwards=true,.maxSpeed=70,.minSpeed=0,.earlyExitRange=1});
+            chassis.turnToHeading(270,800,{.maxSpeed=90,.minSpeed=0,.earlyExitRange=2});
             chassis.waitUntilDone();
-            Misc::cdrift(90,90,1500);
+            Misc::cdrift(100,100,1500);
             
 
 
@@ -1463,12 +1712,14 @@ namespace Driver{
             if(TaskHandler::driver) {
                 int leftY = Misc::curve(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), curveVal, false); 
                 int rightX = Misc::curve(controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X), curveVal, false);
-                // leftMotors.move(leftY+rightX*0.9);
-                // rightMotors.move(leftY-rightX*0.9);
-                if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) { b_driver =! b_driver; }
-                if(b_driver) {leftMotors.move(leftY*0.45+rightX*0.45); rightMotors.move(leftY*0.45-rightX*0.45); }
-                // else { leftMotors.move(leftY+rightX*0.9); rightMotors.move(leftY-rightX*0.9);}
-                else { leftMotors.move(leftY+rightX); rightMotors.move(leftY-rightX);}
+                // // leftMotors.move(leftY+rightX*0.9);
+                // // rightMotors.move(leftY-rightX*0.9);
+                // if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) { b_driver =! b_driver; }
+                // if(b_driver) {leftMotors.move(leftY*0.45+rightX*0.45); rightMotors.move(leftY*0.45-rightX*0.45); }
+                // // else { leftMotors.move(leftY+rightX*0.9); rightMotors.move(leftY-rightX*0.9);}
+                // else { leftMotors.move(leftY+rightX); rightMotors.move(leftY-rightX);}
+                leftMotors.move(leftY+rightX); 
+                rightMotors.move(leftY-rightX);
             }
             pros::delay(Misc::DELAY);
         }
@@ -1476,6 +1727,7 @@ namespace Driver{
 
     void intake(){
         while (1){
+            if (!TaskHandler::driver) { pros::delay(Misc::DELAY); continue; }
             if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) Intake::setState(Intake::State::LOCK);
             else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) Intake::setState(Intake::State::MIDDLE);
             else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) Intake::setState(Intake::State::SCORE);
@@ -1499,6 +1751,7 @@ namespace Driver{
     // }
     void piston(){
         while(1){
+            if (!TaskHandler::driver) { pros::delay(Misc::DELAY); continue; }
             if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_RIGHT)) { Misc::togglePiston(Piston::loader, b_loader); }
             if(controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)) { Misc::togglePiston(Piston::hook, b_hook); }
             pros::delay(Misc::DELAY);
@@ -1624,6 +1877,7 @@ void autonomous() {
     // chassis.turnToHeading(0,1500);
     // pros::delay(3000);
     Auton::Skills::cross();
+    // Auton::Template::wingAWP();
     // chassis.setPose(-43,0,270);
     // chassis.follow(middle_txt, 9, 3000, false);
     pros::delay(1000000);
@@ -1699,6 +1953,7 @@ void opcontrol() {
     pros::Task intakeTask(Driver::intake);
     pros::Task driverTask(Driver::joystick);
     pros::Task pistonTask(Driver::piston);
+    // pros::Task macroTask(Macro::task);
     TaskHandler::colorSort = false;
     TaskHandler::antiJam = false;
 	leftMotors.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST); rightMotors.set_brake_mode_all(pros::E_MOTOR_BRAKE_COAST);
@@ -1711,6 +1966,14 @@ void opcontrol() {
 	// lv_img_set_src(slogo, &logo);
 	// lv_obj_set_pos(slogo,105,-15);
     while(1) {
+        // if (controller.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)) {
+        //     Macro::requestStart();
+        // }
+        // int cancelLeftY = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+        // int cancelRightX = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+        // if (std::abs(cancelLeftY) > 70 || std::abs(cancelRightX) > 70) {
+        //     Macro::requestCancel();
+        // }
         // Sensor::o_colorSort.set_led_pwm(100);
         // Color::colorSort(Color::colorVals::BLUE);
         

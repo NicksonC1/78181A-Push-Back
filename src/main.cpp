@@ -587,7 +587,7 @@ namespace Color {
 } // namespace Color
 
 namespace Intake{
-    enum class State { LOCK, MIDDLE, SCORE, SPIT, AUTON };
+    enum class State { LOCK, MIDDLE, SCORE, SPIT, AUTON, DRIVER };
     State currentState = State::LOCK;
 
     void setState(State state){
@@ -604,6 +604,11 @@ namespace Intake{
                 break;
             case State::MIDDLE:
                 voltage = 75;
+                state1Value = false;
+                state2Value = false;
+                break;
+            case State::DRIVER:
+                voltage = 127;
                 state1Value = false;
                 state2Value = false;
                 break;
@@ -786,8 +791,9 @@ namespace Auton{
             // Misc::cdrift(-20,-20,200);
             // Misc::cdrift(45,45,590);
             chassis.moveToPoint(25,-47.5,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
-            chassis.waitUntilDone();
+            chassis.waitUntil(16);
             Intake::setState(Intake::State::SCORE);
+            chassis.waitUntilDone();
             Misc::cdrift(-20,-20,1000);
             Piston::loader.set_value(false);
             Misc::cdrift(-20,-20,700);
@@ -826,9 +832,10 @@ namespace Auton{
             // Misc::cdrift(-20,-20,200);
             // Misc::cdrift(45,45,590);
             chassis.moveToPoint(25,47.5,1150,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
-            chassis.waitUntilDone();
+            chassis.waitUntil(16);
             Intake::setState(Intake::State::SCORE);
-            Misc::cdrift(-20,-20,1000);
+            chassis.waitUntilDone();
+            Misc::cdrift(-20,-20,850);
             Piston::loader.set_value(false);
             Misc::cdrift(-20,-20,700);
             Intake::setState(Intake::State::LOCK);
@@ -839,7 +846,7 @@ namespace Auton{
             chassis.turnToHeading(125,700,{.maxSpeed=127,.minSpeed=20,.earlyExitRange=3});
             chassis.waitUntilDone();
             Piston::hook.set_value(false);
-            chassis.moveToPose(11,59.5,90,1500,{.forwards=false,.horizontalDrift=8,.lead=0.45,.maxSpeed=80,.minSpeed=0,.earlyExitRange=0}); 
+            chassis.moveToPose(11,59,90,1500,{.forwards=false,.horizontalDrift=8,.lead=0.45,.maxSpeed=80,.minSpeed=0,.earlyExitRange=0}); 
             chassis.waitUntilDone();
             Misc::cdrift(0,-15);
             chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
@@ -1805,7 +1812,8 @@ namespace Driver{
         while (1){
             if (!TaskHandler::driver) { pros::delay(Misc::DELAY); continue; }
             if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) Intake::setState(Intake::State::LOCK);
-            else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) Intake::setState(Intake::State::MIDDLE);
+            else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_X)) Intake::setState(Intake::State::MIDDLE);
+            else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) Intake::setState(Intake::State::DRIVER);
             else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) Intake::setState(Intake::State::SCORE);
             else if (controller.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) Intake::setState(Intake::State::SPIT);
             else Motor::intake.brake();
@@ -1919,8 +1927,11 @@ std::vector<std::pair<std::string, AutonFunc>> autonRoutines = {
     {"Default Auton", Auton::Template::wingAWP},
     
     {"Left", Auton::Template::leftseven},
+    {"Left Middle", Auton::Template::leftMiddle},
     {"Right", Auton::Template::rightseven},
     {"AWP", Auton::Template::wingAWP},
+    {"Skills", Auton::Skills::main},
+    
     // {"Solo", Auton::Template::safeAWP},
 
     // {"Left Middle", Auton::Template::leftMiddle},
@@ -2021,11 +2032,11 @@ void autonomous() {
     // Auton::Skills::cross();
     // Auton::Template::wingAWP();
     // Auton::Template::leftseven();
-    Auton::Template::leftMiddle();
+    // Auton::Template::leftMiddle();
     // Auton::Template::rightseven();
     // chassis.setPose(-43,0,270);
     // chassis.follow(middle_txt, 9, 3000, false);
-    pros::delay(1000000);
+    // pros::delay(1000000);
     // // TaskHandler::antiJam = true;
     // pros::Task antiJam([&](){ while(1) { Jam::antiJam(); pros::delay(Misc::DELAY); }});
     // // Piston::loader.set_value(true);

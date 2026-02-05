@@ -1314,7 +1314,7 @@ namespace Auton{
             chassis.waitUntil(7.1);
             Piston::loader.set_value(true);
             chassis.waitUntilDone();
-            chassis.moveToPoint(7,-7,1000,{.forwards=false,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1});
+            chassis.moveToPoint(6,-7,1000,{.forwards=false,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1});
             chassis.waitUntilDone();
 
             // chassis.turnToPoint(0,0,400,{.forwards=false,.maxSpeed=90,.minSpeed=10,.earlyExitRange=0});
@@ -1328,9 +1328,9 @@ namespace Auton{
 
 
             // chassis.moveToPoint(63,-45,400,{.forwards=true,.maxSpeed=127,.minSpeed=10,.earlyExitRange=1});
-            chassis.moveToPose(63,-48,90,1500,{.forwards=true,.horizontalDrift=8,.lead=0.47,.maxSpeed=127,.minSpeed=0,.earlyExitRange=0});
+            chassis.moveToPose(63,-47.5,90,1500,{.forwards=true,.horizontalDrift=8,.lead=0.47,.maxSpeed=127,.minSpeed=0,.earlyExitRange=0});
             chassis.waitUntilDone();
-            Misc::cdrift(35,35,700);
+            Misc::cdrift(35,35,600);
             // Misc::cdrift(-20,-20,200);
             // Misc::cdrift(45,45,590);
             chassis.moveToPoint(27,-48,1250,{.forwards=false,.maxSpeed=90,.minSpeed=0,.earlyExitRange=3});
@@ -1341,14 +1341,14 @@ namespace Auton{
             // Intake::setState(Intake::St/ate::SCORE);
             Misc::cdrift(-20,-20,400);
             Piston::loader.set_value(false);
-            Misc::cdrift(-20,-20,500);
+            Misc::cdrift(-20,-20,450);
             Intake::setState(Intake::State::LOCK);
 
             Misc::cdrift(70,70,390);
             chassis.turnToHeading(125,700,{.maxSpeed=127,.minSpeed=20,.earlyExitRange=3});
             chassis.waitUntilDone();
             Piston::hook.set_value(false);
-            chassis.moveToPose(11,-36.5,90,1500,{.forwards=false,.horizontalDrift=8,.lead=0.45,.maxSpeed=80,.minSpeed=0,.earlyExitRange=0}); 
+            chassis.moveToPose(11,-37,90,1500,{.forwards=false,.horizontalDrift=8,.lead=0.45,.maxSpeed=80,.minSpeed=0,.earlyExitRange=0}); 
             chassis.waitUntilDone();
             Misc::cdrift(0,-15);
             chassis.setBrakeMode(pros::E_MOTOR_BRAKE_HOLD);
@@ -1446,7 +1446,7 @@ namespace Auton{
             // Intake::setState(Intake::State::SCORE);
             Misc::cdrift(-20,-20,450);
             Piston::loader.set_value(false);
-            Misc::cdrift(-20,-20,250);
+            Misc::cdrift(-20,-20,350);
             Intake::setState(Intake::State::LOCK);
 
             Misc::cdrift(70,70,390);
@@ -1492,12 +1492,14 @@ namespace Auton{
             Intake::setState(Intake::State::AUTON);
             Misc::cdrift(-35,-35,150);
             Piston::loader.set_value(false);
-            Misc::cdrift(-10,-10,450);
-            Misc::cdrift(20,20,200);
+            Misc::cdrift(-10,-10,650);
+            Misc::cdrift(35,35,200);
+            pros::delay(150);
+
             Intake::setState(Intake::State::SPIT);
             Motor::intake1.move(0);
             Motor::intake2.move(0);
-            Misc::cdrift(-20,-20,200);
+            Misc::cdrift(-60,-60,300);
 
         }
 
@@ -2338,13 +2340,13 @@ using AutonFunc = void(*)();
 std::vector<std::pair<std::string, AutonFunc>> autonRoutines = {
     // {"Default Auton", Auton::Template::wingAWPslow},
     // {"Default Auton", Auton::Template::leftsun},
-    // {"Default Auton", Auton::Template::leftMiddleOriginal},
-    {"Default Auton", Auton::Template::leftsun},
+    {"Default Auton", Auton::Template::leftMiddleOriginal},
+    
     // {"Default Auton", Auton::Template::leftMiddle},
     {"4 Wing", Auton::Template::leftfour},
-    
     {"Left Seven", Auton::Template::leftseven},
-    {"4 + 3 Wing", Auton::Template::leftMiddle},
+    {"Seven Sun", Auton::Template::leftsun},
+    {"4 + 3 Wing", Auton::Template::leftMiddleOriginal},
     {"4 + 3 Middle", Auton::Template::leftMiddleEnd},
     {"Right Seven", Auton::Template::rightseven},
     {"Slow ahh AWP", Auton::Template::wingAWPslow},

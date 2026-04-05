@@ -288,57 +288,58 @@ void screen_upd(){
 	// int intake = 0;
 	// int lb_temp = 0;
 	while(1){
-		int Rtemp = 0;
-		int Ltemp = 0;
-		int intake = 0;
-		int lb_temp = 0;
-		std::vector<double> LMotor = leftMotors.get_temperature_all(); 
-		std::vector<double> RMotor = rightMotors.get_temperature_all();
-		LVGL_vals::bVolt = pros::battery::get_capacity();
-		LVGL_vals::intake1 = Motor::intake1.get_temperature();
-		LVGL_vals::intake2 = Motor::intake2.get_temperature();
+		// int Rtemp = 0;
+		// int Ltemp = 0;
+		// int intake = 0;
+		// int lb_temp = 0;
+		// std::vector<double> LMotor = leftMotors.get_temperature_all(); 
+		// std::vector<double> RMotor = rightMotors.get_temperature_all();
+		// LVGL_vals::bVolt = pros::battery::get_capacity();
+		// LVGL_vals::intake1 = Motor::intake1.get_temperature();
+		// LVGL_vals::intake2 = Motor::intake2.get_temperature();
+		// //add back when no error
 
-		if((RMotor[0])/45.0 >= 1){
-			Rtemp = 100;
-		} else Rtemp = (int)((RMotor[0] - 35.0)*10);
+		// if((RMotor[0])/45.0 >= 1){
+		// 	Rtemp = 100;
+		// } else Rtemp = (int)((RMotor[0] - 35.0)*10);
 
-		if((LMotor[0])/45.0 >= 1){
-			Ltemp = 100;
-		} else Ltemp = (int)((LMotor[0] - 35.0)*10);
+		// if((LMotor[0])/45.0 >= 1){
+		// 	Ltemp = 100;
+		// } else Ltemp = (int)((LMotor[0] - 35.0)*10);
 
-		if((LVGL_vals::intake2)/45.0 >= 1){
-			intake = 100;
-		} else intake = (int)((intake - 35.0)*10);
+		// if((LVGL_vals::intake2)/45.0 >= 1){
+		// 	intake = 100;
+		// } else intake = (int)((intake - 35.0)*10);
 
-		if((LVGL_vals::intake1)/45.0 >= 1){
-			lb_temp = 100;
-		} else lb_temp = (int)((LVGL_vals::intake1 - 35.0)*10);
+		// if((LVGL_vals::intake1)/45.0 >= 1){
+		// 	lb_temp = 100;
+		// } else lb_temp = (int)((LVGL_vals::intake1 - 35.0)*10);
 
 
-		lv_bar_set_value(bar1, Ltemp, LV_ANIM_ON);
-		lv_bar_set_value(bar2, Rtemp, LV_ANIM_ON);
-		lv_bar_set_value(bar3, intake, LV_ANIM_ON);
-		lv_bar_set_value(bar4, lb_temp, LV_ANIM_ON);
-		lv_bar_set_value(Bat_rec_indicator, LVGL_vals::bVolt, LV_ANIM_ON);
+		// lv_bar_set_value(bar1, Ltemp, LV_ANIM_ON);
+		// lv_bar_set_value(bar2, Rtemp, LV_ANIM_ON);
+		// lv_bar_set_value(bar3, intake, LV_ANIM_ON);
+		// lv_bar_set_value(bar4, lb_temp, LV_ANIM_ON);
+		// lv_bar_set_value(Bat_rec_indicator, LVGL_vals::bVolt, LV_ANIM_ON);
 
-		//Auton Selector UPD
-		lv_roller_set_selected(autonroller, autonState, LV_ANIM_ON);
+		// //Auton Selector UPD
+		// lv_roller_set_selected(autonroller, autonState, LV_ANIM_ON);
 
-		// lv_obj_t *Wlogo = lv_img_create(lv_scr_act());
-		// LV_IMG_DECLARE(WORLDS_logo);
-		// lv_img_set_src(Wlogo, &WORLDS_logo);
-		// lv_obj_set_pos(Wlogo, 10, 3);
-		printf("Motor 1: %f\n", RMotor[0]);
-		printf("Motor 1 >> Rtemp: %f\n", Rtemp);
+		// // lv_obj_t *Wlogo = lv_img_create(lv_scr_act());
+		// // LV_IMG_DECLARE(WORLDS_logo);
+		// // lv_img_set_src(Wlogo, &WORLDS_logo);
+		// // lv_obj_set_pos(Wlogo, 10, 3);
+		// printf("Motor 1: %f\n", RMotor[0]);
+		// printf("Motor 1 >> Rtemp: %f\n", Rtemp);
 
-		printf("Motor 2: %f\n", RMotor[1]);
-		printf("Motor 3: %f\n", RMotor[2]);
+		// printf("Motor 2: %f\n", RMotor[1]);
+		// printf("Motor 3: %f\n", RMotor[2]);
 
-		printf("Motor 4: %f\n", LMotor[0]);
-		printf("%f\n", LMotor[1]);
-		printf("%f\n", LMotor[2]);
+		// printf("Motor 4: %f\n", LMotor[0]);
+		// printf("%f\n", LMotor[1]);
+		// printf("%f\n", LMotor[2]);
 
-		lv_timer_handler();
+		// lv_timer_handler();
 		pros::delay(50);
 	}	
 

@@ -1,59 +1,59 @@
-#pragma once
+// #pragma once
 
-#include "main.h"
-#include "pros/rtos.hpp"
-#include "genesis/api.hpp"
+// #include "main.h"
+// #include "pros/rtos.hpp"
+// #include "genesis/api.hpp"
 
-extern pros::Controller controller;
+// extern pros::Controller controller;
 
-extern pros::MotorGroup leftMotors;
-extern pros::MotorGroup rightMotors;
+// extern pros::MotorGroup leftMotors;
+// extern pros::MotorGroup rightMotors;
 
-namespace Motor{
-    extern pros::Motor intake1;
-    extern pros::Motor intake2;
-    extern pros::MotorGroup intake;
-} // namespace Motor
+// namespace Motor{
+//     extern pros::Motor intake1;
+//     extern pros::Motor intake2;
+//     extern pros::MotorGroup intake;
+// } // namespace Motor
 
-namespace Sensor{
-    extern pros::Distance d_front;
-    extern pros::Distance d_left;
-    extern pros::Distance d_right;
-    // extern pros::Distance d_filled;
-    extern pros::Optical o_colorSort;
-    extern pros::Optical o_crossed;
-    extern pros::adi::DigitalIn autonSwitch;
-} // namspace Sensor
+// namespace Sensor{
+//     extern pros::Distance d_front;
+//     extern pros::Distance d_left;
+//     extern pros::Distance d_right;
+//     // extern pros::Distance d_filled;
+//     extern pros::Optical o_colorSort;
+//     extern pros::Optical o_crossed;
+//     extern pros::adi::DigitalIn autonSwitch;
+// } // namspace Sensor
 
-namespace Piston{
-    extern pros::adi::DigitalOut loader;
-    extern pros::adi::DigitalOut hook;
-    extern pros::adi::DigitalOut state1;
-    extern pros::adi::DigitalOut state2;
-    extern pros::adi::DigitalOut middle; //TBD
-} // namespace Piston
+// namespace Piston{
+//     extern pros::adi::DigitalOut loader;
+//     extern pros::adi::DigitalOut hook;
+//     extern pros::adi::DigitalOut state1;
+//     extern pros::adi::DigitalOut state2;
+//     extern pros::adi::DigitalOut middle; //TBD
+// } // namespace Piston
 
-class CustomIMU : public pros::IMU {
-    public:
-        CustomIMU(int port, double scalar);
-        virtual double get_rotation() const override;
+// class CustomIMU : public pros::IMU {
+//     public:
+//         CustomIMU(int port, double scalar);
+//         virtual double get_rotation() const override;
 
-    private:
-        const int m_port;
-        const double m_scalar;
-};
+//     private:
+//         const int m_port;
+//         const double m_scalar;
+// };
 
-// extern pros::Imu imu;
-extern CustomIMU s_imu;
-extern pros::Rotation horizontalEnc;
-extern pros::Rotation verticalEnc;
+// // extern pros::Imu imu;
+// extern CustomIMU s_imu;
+// extern pros::Rotation horizontalEnc;
+// extern pros::Rotation verticalEnc;
 
-extern genesis::TrackingWheel horizontal;
-extern genesis::TrackingWheel vertical;
-// extern genesis::Drivetrain drivetrain;
-// extern genesis::ControllerSettings linearController;
-// extern genesis::ControllerSettings angularController;
-// extern genesis::OdomSensors sensors;
-// extern genesis::ExpoDriveCurve throttleCurve;
-// extern genesis::ExpoDriveCurve steerCurve;
-// extern genesis::Chassis chassis;
+// extern genesis::TrackingWheel horizontal;
+// extern genesis::TrackingWheel vertical;
+// // extern genesis::Drivetrain drivetrain;
+// // extern genesis::ControllerSettings linearController;
+// // extern genesis::ControllerSettings angularController;
+// // extern genesis::OdomSensors sensors;
+// // extern genesis::ExpoDriveCurve throttleCurve;
+// // extern genesis::ExpoDriveCurve steerCurve;
+// // extern genesis::Chassis chassis;

@@ -141,8 +141,8 @@ bin/main.cpp.o: src/main.cpp include/main.h include/pros/apix.h \
  include/fmt/format.h include/fmt/core.h include/fmt/format-inl.h \
  include/genesis/logger/baseSink.hpp include/fmt/args.h \
  include/genesis/logger/message.hpp include/genesis/logger/infoSink.hpp \
- include/genesis/logger/telemetrySink.hpp include/brainScreenLVGL.h \
- include/config.h include/main.h
+ include/genesis/logger/telemetrySink.hpp include/RclTracking.hpp \
+ include/main.h
 include/main.h:
 include/pros/apix.h:
 include/api.h:
@@ -385,6 +385,5 @@ include/fmt/args.h:
 include/genesis/logger/message.hpp:
 include/genesis/logger/infoSink.hpp:
 include/genesis/logger/telemetrySink.hpp:
-include/brainScreenLVGL.h:
-include/config.h:
+include/RclTracking.hpp:
 include/main.h:

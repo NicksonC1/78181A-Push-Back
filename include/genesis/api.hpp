@@ -1,6 +1,7 @@
 #pragma once
 
 #include "genesis/pid.hpp" // IWYU pragma: keep
+#include "genesis/motionPlus.hpp" // IWYU pragma: keep
 #include "genesis/pose.hpp" // IWYU pragma: keep
 #include "genesis/util.hpp" // IWYU pragma: keep
 #include "genesis/chassis/chassis.hpp"

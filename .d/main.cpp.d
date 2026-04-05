@@ -131,16 +131,17 @@ bin/main.cpp.o: src/main.cpp include/main.h include/pros/apix.h \
  include/pros/screen.hpp include/pros/screen.h include/pros/vision.hpp \
  include/pros/vision.h include/pros/device.h include/pros/serial.h \
  include/pros/serial.hpp include/api.h include/genesis/api.hpp \
- include/genesis/pid.hpp include/genesis/pose.hpp \
- include/genesis/util.hpp include/genesis/chassis/chassis.hpp \
- include/pros/imu.hpp include/genesis/asset.hpp \
- include/genesis/chassis/trackingWheel.hpp include/pros/motor_group.hpp \
- include/pros/adi.hpp include/pros/rotation.hpp \
- include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp \
- include/genesis/logger/logger.hpp include/fmt/core.h \
- include/fmt/format.h include/fmt/core.h include/fmt/format-inl.h \
- include/genesis/logger/baseSink.hpp include/fmt/args.h \
- include/genesis/logger/message.hpp include/genesis/logger/infoSink.hpp \
+ include/genesis/pid.hpp include/genesis/motionPlus.hpp \
+ include/genesis/pose.hpp include/genesis/util.hpp \
+ include/genesis/chassis/chassis.hpp include/pros/imu.hpp \
+ include/genesis/asset.hpp include/genesis/chassis/trackingWheel.hpp \
+ include/pros/motor_group.hpp include/pros/adi.hpp \
+ include/pros/rotation.hpp include/genesis/exitcondition.hpp \
+ include/genesis/driveCurve.hpp include/genesis/logger/logger.hpp \
+ include/fmt/core.h include/fmt/format.h include/fmt/core.h \
+ include/fmt/format-inl.h include/genesis/logger/baseSink.hpp \
+ include/fmt/args.h include/genesis/logger/message.hpp \
+ include/genesis/logger/infoSink.hpp \
  include/genesis/logger/telemetrySink.hpp include/RclTracking.hpp \
  include/main.h
 include/main.h:
@@ -364,6 +365,7 @@ include/pros/serial.hpp:
 include/api.h:
 include/genesis/api.hpp:
 include/genesis/pid.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/pose.hpp:
 include/genesis/util.hpp:
 include/genesis/chassis/chassis.hpp:

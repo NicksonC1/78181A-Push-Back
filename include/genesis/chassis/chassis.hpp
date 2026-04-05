@@ -2,10 +2,12 @@
 
 #include "pros/rtos.hpp"
 #include "pros/imu.hpp"
+#include <functional>
 #include "genesis/asset.hpp"
 #include "genesis/chassis/trackingWheel.hpp"
 #include "genesis/pose.hpp"
 #include "genesis/pid.hpp"
+#include "genesis/motionPlus.hpp"
 #include "genesis/exitcondition.hpp"
 #include "genesis/driveCurve.hpp"
 
@@ -680,6 +682,37 @@ class Chassis {
          * @endcode
          */
         void moveToPoint(float x, float y, int timeout, MoveToPointParams params = {}, bool async = true);
+        void setUnitPlus(float unit);
+        void setLateralPIDPlus(float kPInitial, float kPFinal, float kPKnee, float kPPower, float kI = 0,
+                               float kD = 0, float integralDeadband = 0, bool integralSignReset = false);
+        void setTurnPIDPlus(float kPInitial, float kPFinal, float kPKnee, float kPPower, float kI = 0, float kD = 0,
+                            float integralDeadband = 0, bool integralSignReset = false);
+        void setHeadingCorrectPIDPlus(float kPInitial, float kPFinal, float kPKnee, float kPPower, float kI = 0,
+                                      float kD = 0, float integralDeadband = 0, bool integralSignReset = false);
+        void setPursuitSettingsPlus(float minLookahead, float maxLookahead, float pursuitVeloConst,
+                                    float pursuitCurvConst, float pursuitCTEConst, float radiusLookahead);
+        void setIntakeExitSupplierPlus(std::function<float()> supplier, float crossedVelocity = 675.0f,
+                                       float settledVelocity = 600.0f);
+        void clearIntakeExitSupplierPlus();
+        void moveDistPlus(float target, float maxSpeed, int timeout, bool async = true);
+        void pushPlus(float speed, int timeout, bool async = true);
+        void pushPlus(float coord, bool isY, float speed, int timeout, bool async = true);
+        void crossBarrierPlus(bool async = true);
+        void turnHeadingPlus(float target, int sides, float minSpeed, float maxSpeed, int timeout, bool async = true);
+        void turnPointPlus(float x, float y, int sides, float minSpeed, float maxSpeed, int timeout,
+                           bool async = true);
+        void turnPointOneIterPlus(float x, float y, int sides, float minSpeed, float maxSpeed);
+        void movePointPlus(float x, float y, float minSpeed, float maxSpeed, int timeout, bool settle = true,
+                           bool endIntake = false, bool async = true);
+        void movePosePlus(float x, float y, float theta, float dLead, float gLead, float minSpeed, float maxSpeed,
+                          int timeout, float chasePower = -1, bool settle = true, bool endIntake = false,
+                          bool async = true);
+        void followPursuitPlus(PathPlus path, int timeout, float chasePower = -1, bool reverse = false,
+                               bool endIntake = false, bool async = true);
+        void followStanleyPlus(PathPlus path, int timeout, float k, float chasePower = -1, bool reverse = false,
+                               bool endIntake = false, bool async = true);
+        void followAPSPlus(PathPlus path, int timeout, float maxSpeed = 1, float chasePower = -1, bool reverse = false,
+                           bool endIntake = false, bool async = true);
         /**
          * @brief Move the chassis along a path
          *
@@ -935,6 +968,24 @@ class Chassis {
         ExitCondition lateralSmallExit;
         ExitCondition angularLargeExit;
         ExitCondition angularSmallExit;
+        float headingTargetPlus = 0;
+        bool headingTargetInitializedPlus = false;
+        float unitPlus = inchPlus;
+        float pursuitVeloConstPlus = 0;
+        float pursuitCurvConstPlus = 0;
+        float pursuitCTEConstPlus = 0;
+        float minLookaheadPlus = 12;
+        float maxLookaheadPlus = 12;
+        float radiusLookaheadPlus = 5;
+        float intakeCrossedVelocityPlus = 675.0f;
+        float intakeSettledVelocityPlus = 600.0f;
+        std::function<float()> intakeExitSupplierPlus;
+        AsymptoticGainsPlus lateralKpPlus {15000.0f, 15000.0f, 1.0f, 1.0f};
+        AsymptoticGainsPlus turnKpPlus {480.0f, 220.0f, 28.0f, 1.7f};
+        AsymptoticGainsPlus headingCorrectKpPlus {200.0f, 200.0f, 1.0f, 1.0f};
+        PIDPlus lateralControllerPlus {lateralKpPlus};
+        PIDPlus turnControllerPlus {turnKpPlus};
+        PIDPlus headingCorrectControllerPlus {headingCorrectKpPlus};
     private:
         pros::Mutex mutex;
 };

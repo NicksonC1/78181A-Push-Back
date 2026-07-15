@@ -116,6 +116,11 @@ void genesis::Chassis::waitUntilDone() {
     while (distTraveled != -1);
 }
 
+void genesis::Chassis::waitUntilPlus(float dist) {
+    do pros::delay(10);
+    while (distTraveled <= dist && distTraveled != -1);
+}
+
 void genesis::Chassis::requestMotionStart() {
     if (this->isInMotion()) this->motionQueued = true; // indicate a motion is queued
     else this->motionRunning = true; // indicate a motion is running

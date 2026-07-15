@@ -9,8 +9,8 @@ bin/genesis/chassis/trackingWheel.cpp.o: \
  include/pros/rotation.h include/genesis/util.hpp \
  include/genesis/chassis/chassis.hpp include/pros/imu.hpp \
  include/pros/imu.h include/genesis/asset.hpp include/genesis/pose.hpp \
- include/genesis/pid.hpp include/genesis/exitcondition.hpp \
- include/genesis/driveCurve.hpp
+ include/genesis/pid.hpp include/genesis/motionPlus.hpp \
+ include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp
 include/genesis/chassis/trackingWheel.hpp:
 include/pros/motors.hpp:
 include/pros/abstract_motor.hpp:
@@ -34,5 +34,6 @@ include/pros/imu.h:
 include/genesis/asset.hpp:
 include/genesis/pose.hpp:
 include/genesis/pid.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:

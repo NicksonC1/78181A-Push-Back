@@ -28,6 +28,10 @@ constexpr float kMovePointExitErrorFeet = 0.6f;
 constexpr float kEndIntakeExitErrorFeet = 0.5f;
 constexpr float kMovePoseCloseDistanceFeet = 0.7f;
 constexpr float kMovePoseGhostDistancePerSpeedFeet = 2.0f;
+constexpr float kMovePoseSettleDistanceFeet = 1.0f / 12.0f;
+// constexpr float kMovePoseSettleVelocityFeet = 1.0f / 12.0f;
+constexpr float kMovePoseSettleVelocityFeet = 0.15f;
+constexpr float kMovePoseSettleHeadingDeg = 2.0f;
 constexpr float kApsAngularDenominatorScaleFeet = 25.0f;
 constexpr float kApsCrosstrackScaleFeet = 10.0f;
 constexpr float kApsLookaheadFeet = 1.8f;
@@ -77,6 +81,11 @@ float facePlus(const genesis::Pose& pose, const genesis::Pose& other) {
 
 float anglePlus(const genesis::Pose& pose, const genesis::Pose& other) {
     return reduceAnglePlus(genesis::radToDeg(std::atan2(other.x - pose.x, other.y - pose.y)));
+}
+
+float forwardErrorPlus(const genesis::Pose& pose, const genesis::Pose& target, float heading) {
+    const float headingRad = genesis::degToRad(heading);
+    return std::sin(headingRad) * (target.x - pose.x) + std::cos(headingRad) * (target.y - pose.y);
 }
 
 float parallelPlus(const genesis::Pose& pose, const genesis::Pose& other) { return reduceAnglePlus(other.theta - pose.theta); }
@@ -719,12 +728,23 @@ void genesis::Chassis::movePosePlus(float x, float y, float theta, float dLead, 
         }
 
         float angularOutput = clampPlus(turnControllerPlus.tick(angleError), -12000.0f, 12000.0f);
-        float distanceOutput =
-            (closeEnd || pose.distance(end) > pose.distance(carrot)) ? lateralControllerPlus.tick(pose.distance(end))
-                                                                     : lateralControllerPlus.tick(pose.distance(carrot));
-        if (settle && closeEnd && pose.distance(end) < kMovePoseCloseDistanceFeet) distanceOutput *= std::cos(degToRad(facePlus(pose, target)));
-        distanceOutput =
-            std::copysign(clampPlus(std::fabs(distanceOutput), std::fabs(minSpeed) * 12000.0f, 12000.0f), distanceOutput);
+        float distanceOutput = 0;
+        if (settle && closeEnd) {
+            const float signedEndError = forwardErrorPlus(pose, end, theta);
+            distanceOutput = lateralControllerPlus.tick(signedEndError);
+            if (pose.distance(end) < kMovePoseCloseDistanceFeet) {
+                distanceOutput *= std::cos(degToRad(facePlus(pose, target)));
+            }
+            distanceOutput = clampPlus(distanceOutput, -12000.0f, 12000.0f);
+        } else {
+            distanceOutput =
+                (closeEnd || pose.distance(end) > pose.distance(carrot)) ? lateralControllerPlus.tick(pose.distance(end))
+                                                                         : lateralControllerPlus.tick(pose.distance(carrot));
+            if (settle && closeEnd && pose.distance(end) < kMovePoseCloseDistanceFeet)
+                distanceOutput *= std::cos(degToRad(facePlus(pose, target)));
+            distanceOutput =
+                std::copysign(clampPlus(std::fabs(distanceOutput), std::fabs(minSpeed) * 12000.0f, 12000.0f), distanceOutput);
+        }
 
         const float radius = getRadiusPlus(pose, target) / std::fmin(pose.distance(target), 1.0f);
         const float maxSlipSpeed = std::sqrt(chasePower * radius * 1000000.0f);
@@ -740,7 +760,10 @@ void genesis::Chassis::movePosePlus(float x, float y, float theta, float dLead, 
 
         timer += 10;
         pros::delay(10);
-    } while (((minSpeed == 0 && ExitPlus::velo(scalarSpeedPlus(), kMotionExitSpeedFeet)) || !crossedOnce) &&
+    } while (((settle && (ExitPlus::error(pose.distance(end), kMovePoseSettleDistanceFeet) ||
+                          ExitPlus::error(parallelPlus(pose, end), kMovePoseSettleHeadingDeg) ||
+                          ExitPlus::velo(scalarSpeedPlus(), kMovePoseSettleVelocityFeet) || !crossedOnce)) ||
+              (!settle && ((minSpeed == 0 && ExitPlus::velo(scalarSpeedPlus(), kMotionExitSpeedFeet)) || !crossedOnce))) &&
              (!endIntake ||
               ((intakeExitSupplierPlus &&
                 ExitPlus::intaked(intakeExitSupplierPlus(), intakeCrossedVelocityPlus, intakeSettledVelocityPlus)) ||
@@ -750,7 +773,7 @@ void genesis::Chassis::movePosePlus(float x, float y, float theta, float dLead, 
     headingTargetPlus = reverse ? theta - 180.0f : theta;
     headingTargetInitializedPlus = true;
 
-    if (minSpeed == 0) stopDrivetrainPlus(drivetrain.leftMotors, drivetrain.rightMotors);
+    if (settle || minSpeed == 0) stopDrivetrainPlus(drivetrain.leftMotors, drivetrain.rightMotors);
     distTraveled = -1;
     this->endMotion();
 }

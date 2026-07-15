@@ -9,8 +9,8 @@ bin/genesis/chassis/odom.cpp.o: src/genesis/chassis/odom.cpp \
  include/pros/colors.hpp include/pros/adi.hpp include/pros/adi.h \
  include/pros/rotation.hpp include/pros/rotation.h \
  include/genesis/pose.hpp include/genesis/pid.hpp \
- include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp \
- include/genesis/chassis/odom.hpp
+ include/genesis/motionPlus.hpp include/genesis/exitcondition.hpp \
+ include/genesis/driveCurve.hpp include/genesis/chassis/odom.hpp
 include/pros/rtos.hpp:
 include/pros/rtos.h:
 include/genesis/util.hpp:
@@ -34,6 +34,7 @@ include/pros/rotation.hpp:
 include/pros/rotation.h:
 include/genesis/pose.hpp:
 include/genesis/pid.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:
 include/genesis/chassis/odom.hpp:

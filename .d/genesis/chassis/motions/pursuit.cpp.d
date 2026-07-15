@@ -14,8 +14,8 @@ bin/genesis/chassis/motions/pursuit.cpp.o: \
  include/pros/colors.hpp include/pros/adi.hpp include/pros/adi.h \
  include/pros/rotation.hpp include/pros/rotation.h \
  include/genesis/pose.hpp include/genesis/pid.hpp \
- include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp \
- include/genesis/util.hpp
+ include/genesis/motionPlus.hpp include/genesis/exitcondition.hpp \
+ include/genesis/driveCurve.hpp include/genesis/util.hpp
 include/pros/misc.hpp:
 include/pros/misc.h:
 include/genesis/logger/logger.hpp:
@@ -48,6 +48,7 @@ include/pros/rotation.hpp:
 include/pros/rotation.h:
 include/genesis/pose.hpp:
 include/genesis/pid.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:
 include/genesis/util.hpp:

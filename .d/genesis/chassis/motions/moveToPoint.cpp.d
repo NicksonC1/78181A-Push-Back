@@ -9,11 +9,12 @@ bin/genesis/chassis/motions/moveToPoint.cpp.o: \
  include/pros/colors.hpp include/pros/adi.hpp include/pros/adi.h \
  include/pros/rotation.hpp include/pros/rotation.h \
  include/genesis/pose.hpp include/genesis/pid.hpp \
- include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp \
- include/genesis/logger/logger.hpp include/fmt/core.h \
- include/fmt/format.h include/fmt/core.h include/fmt/format-inl.h \
- include/genesis/logger/baseSink.hpp include/fmt/args.h \
- include/genesis/logger/message.hpp include/genesis/logger/infoSink.hpp \
+ include/genesis/motionPlus.hpp include/genesis/exitcondition.hpp \
+ include/genesis/driveCurve.hpp include/genesis/logger/logger.hpp \
+ include/fmt/core.h include/fmt/format.h include/fmt/core.h \
+ include/fmt/format-inl.h include/genesis/logger/baseSink.hpp \
+ include/fmt/args.h include/genesis/logger/message.hpp \
+ include/genesis/logger/infoSink.hpp \
  include/genesis/logger/telemetrySink.hpp include/genesis/timer.hpp \
  include/genesis/util.hpp
 include/genesis/chassis/chassis.hpp:
@@ -38,6 +39,7 @@ include/pros/rotation.hpp:
 include/pros/rotation.h:
 include/genesis/pose.hpp:
 include/genesis/pid.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:
 include/genesis/logger/logger.hpp:

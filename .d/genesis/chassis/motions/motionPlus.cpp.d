@@ -1,4 +1,5 @@
-bin/genesis/chassis/opcontrol.cpp.o: src/genesis/chassis/opcontrol.cpp \
+bin/genesis/chassis/motions/motionPlus.cpp.o: \
+ src/genesis/chassis/motions/motionPlus.cpp \
  include/genesis/chassis/chassis.hpp include/pros/rtos.hpp \
  include/pros/rtos.h include/pros/imu.hpp include/pros/device.hpp \
  include/pros/misc.hpp include/pros/misc.h include/pros/imu.h \
@@ -9,7 +10,8 @@ bin/genesis/chassis/opcontrol.cpp.o: src/genesis/chassis/opcontrol.cpp \
  include/pros/rotation.hpp include/pros/rotation.h \
  include/genesis/pose.hpp include/genesis/pid.hpp \
  include/genesis/motionPlus.hpp include/genesis/exitcondition.hpp \
- include/genesis/driveCurve.hpp include/genesis/util.hpp
+ include/genesis/driveCurve.hpp include/genesis/chassis/odom.hpp \
+ include/genesis/util.hpp
 include/genesis/chassis/chassis.hpp:
 include/pros/rtos.hpp:
 include/pros/rtos.h:
@@ -35,4 +37,5 @@ include/genesis/pid.hpp:
 include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:
+include/genesis/chassis/odom.hpp:
 include/genesis/util.hpp:

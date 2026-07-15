@@ -135,8 +135,8 @@ bin/RclTracking.cpp.o: src/RclTracking.cpp include/RclTracking.hpp \
  include/genesis/asset.hpp include/genesis/chassis/trackingWheel.hpp \
  include/pros/motor_group.hpp include/pros/adi.hpp \
  include/pros/rotation.hpp include/genesis/pose.hpp \
- include/genesis/pid.hpp include/genesis/exitcondition.hpp \
- include/genesis/driveCurve.hpp
+ include/genesis/pid.hpp include/genesis/motionPlus.hpp \
+ include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp
 include/RclTracking.hpp:
 include/main.h:
 include/pros/apix.h:
@@ -366,5 +366,6 @@ include/pros/adi.hpp:
 include/pros/rotation.hpp:
 include/genesis/pose.hpp:
 include/genesis/pid.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:

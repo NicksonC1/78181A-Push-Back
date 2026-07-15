@@ -13,8 +13,8 @@ bin/genesis/chassis/chassis.cpp.o: src/genesis/chassis/chassis.cpp \
  include/pros/motor_group.hpp include/pros/colors.hpp \
  include/pros/adi.hpp include/pros/adi.h include/pros/rotation.hpp \
  include/pros/rotation.h include/genesis/pose.hpp include/genesis/pid.hpp \
- include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp \
- include/genesis/chassis/odom.hpp
+ include/genesis/motionPlus.hpp include/genesis/exitcondition.hpp \
+ include/genesis/driveCurve.hpp include/genesis/chassis/odom.hpp
 include/pros/imu.hpp:
 include/pros/device.hpp:
 include/pros/misc.hpp:
@@ -48,6 +48,7 @@ include/pros/rotation.hpp:
 include/pros/rotation.h:
 include/genesis/pose.hpp:
 include/genesis/pid.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:
 include/genesis/chassis/odom.hpp:

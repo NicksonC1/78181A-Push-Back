@@ -9,7 +9,8 @@ bin/genesis/driveCurve.cpp.o: src/genesis/driveCurve.cpp \
  include/pros/colors.hpp include/pros/adi.hpp include/pros/adi.h \
  include/pros/rotation.hpp include/pros/rotation.h \
  include/genesis/pose.hpp include/genesis/pid.hpp \
- include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp
+ include/genesis/motionPlus.hpp include/genesis/exitcondition.hpp \
+ include/genesis/driveCurve.hpp
 include/genesis/util.hpp:
 include/genesis/chassis/chassis.hpp:
 include/pros/rtos.hpp:
@@ -33,5 +34,6 @@ include/pros/rotation.hpp:
 include/pros/rotation.h:
 include/genesis/pose.hpp:
 include/genesis/pid.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:

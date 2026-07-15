@@ -159,3 +159,135 @@ void genesis::Chassis::moveToPose(float x, float y, float theta, int timeout, Mo
     distTraveled = -1;
     this->endMotion();
 }
+
+void genesis::Chassis::moveToPosePro(float x, float y, float theta, int timeout, MoveToPoseParams params, bool async) {
+    this->requestMotionStart();
+    if (!this->motionRunning) return;
+    if (async) {
+        pros::Task task([=]() { moveToPosePro(x, y, theta, timeout, params, false); });
+        this->endMotion();
+        pros::delay(10);
+        return;
+    }
+
+    lateralLargeExit.reset();
+    lateralSmallExit.reset();
+    angularLargeExit.reset();
+    angularSmallExit.reset();
+
+    Pose target(x, y, M_PI_2 - degToRad(theta));
+    if (!params.forwards) target.theta = fmod(target.theta + M_PI, 2 * M_PI);
+
+    if (params.horizontalDrift == 0) params.horizontalDrift = drivetrain.horizontalDrift;
+
+    Pose lastPose = getPose(true, true);
+    distTraveled = 0;
+    Timer timer(timeout);
+    bool close = false;
+    bool lateralSettled = false;
+    bool prevSameSide = false;
+    float prevLateralOut = 0;
+    float prevAngularOut = 0;
+
+    const float initialDistTarget = lastPose.distance(target);
+    Pose initialCarrot = target - Pose(cos(target.theta), sin(target.theta)) * params.lead * initialDistTarget;
+    const float initialAdjustedTheta = params.forwards ? lastPose.theta : lastPose.theta + M_PI;
+    const float initialAngularErrorDeg =
+        radToDeg(angleError(initialAdjustedTheta, lastPose.angle(initialCarrot)));
+    float initialLateralError = lastPose.distance(initialCarrot);
+    initialLateralError *= std::copysign(1.0f, cos(angleError(lastPose.theta, lastPose.angle(initialCarrot))));
+    lateralControllerPlus.reset(initialLateralError / 12.0f);
+    lateralControllerPlus.setKp(initialLateralError / 12.0f);
+    turnControllerPlus.reset(initialAngularErrorDeg);
+    turnControllerPlus.setKp(initialAngularErrorDeg);
+
+    const float voltageScale = 12000.0f / 127.0f;
+    float allowedVoltage = std::fabs(params.maxSpeed) * voltageScale;
+    const float minVoltage = std::fabs(params.minSpeed) * voltageScale;
+    const float closeVoltage = 60.0f * voltageScale;
+    const float lateralSlewVoltage = lateralSettings.slew > 0 ? lateralSettings.slew * voltageScale : 0.0f;
+    const float angularSlewVoltage = angularSettings.slew > 0 ? angularSettings.slew * voltageScale : 0.0f;
+
+    while (!timer.isDone() &&
+           ((!lateralSettled || (!angularLargeExit.getExit() && !angularSmallExit.getExit())) || !close) &&
+           this->motionRunning) {
+        const Pose pose = getPose(true, true);
+
+        distTraveled += pose.distance(lastPose);
+        lastPose = pose;
+
+        const float distTarget = pose.distance(target);
+        if (distTarget < 7.5f && !close) {
+            close = true;
+            allowedVoltage = std::max(std::fabs(prevLateralOut), closeVoltage);
+        }
+
+        if (lateralLargeExit.getExit() && lateralSmallExit.getExit()) lateralSettled = true;
+
+        Pose carrot = target - Pose(cos(target.theta), sin(target.theta)) * params.lead * distTarget;
+        if (close) carrot = target;
+
+        const bool robotSide =
+            (pose.y - target.y) * -sin(target.theta) <= (pose.x - target.x) * cos(target.theta) + params.earlyExitRange;
+        const bool carrotSide = (carrot.y - target.y) * -sin(target.theta) <=
+                                (carrot.x - target.x) * cos(target.theta) + params.earlyExitRange;
+        const bool sameSide = robotSide == carrotSide;
+        if (!sameSide && prevSameSide && close && params.minSpeed != 0) break;
+        prevSameSide = sameSide;
+
+        const float adjustedRobotTheta = params.forwards ? pose.theta : pose.theta + M_PI;
+        const float angularErrorDeg = radToDeg(
+            close ? angleError(adjustedRobotTheta, target.theta) : angleError(adjustedRobotTheta, pose.angle(carrot)));
+        float lateralError = pose.distance(carrot);
+        if (close) lateralError *= cos(angleError(pose.theta, pose.angle(carrot)));
+        else lateralError *= std::copysign(1.0f, cos(angleError(pose.theta, pose.angle(carrot))));
+
+        lateralSmallExit.update(lateralError);
+        lateralLargeExit.update(lateralError);
+        angularSmallExit.update(angularErrorDeg);
+        angularLargeExit.update(angularErrorDeg);
+
+        float lateralOut = lateralControllerPlus.tick(lateralError / 12.0f);
+        float angularOut = turnControllerPlus.tick(angularErrorDeg);
+
+        angularOut = std::clamp(angularOut, -allowedVoltage, allowedVoltage);
+        if (angularSlewVoltage > 0) angularOut = slew(angularOut, prevAngularOut, angularSlewVoltage);
+
+        lateralOut = std::clamp(lateralOut, -allowedVoltage, allowedVoltage);
+        if (!close && lateralSlewVoltage > 0) lateralOut = slew(lateralOut, prevLateralOut, lateralSlewVoltage);
+
+        const float radius = 1.0f / fabs(getCurvature(pose, carrot));
+        const float maxSlipSpeed = sqrt(params.horizontalDrift * radius * 9.8f);
+        const float maxSlipVoltage = maxSlipSpeed * voltageScale;
+        lateralOut = std::clamp(lateralOut, -maxSlipVoltage, maxSlipVoltage);
+
+        const float overturn = fabs(angularOut) + fabs(lateralOut) - allowedVoltage;
+        if (overturn > 0) lateralOut -= lateralOut > 0 ? overturn : -overturn;
+
+        if (params.forwards && !close) lateralOut = std::fmax(lateralOut, 0.0f);
+        else if (!params.forwards && !close) lateralOut = std::fmin(lateralOut, 0.0f);
+
+        if (params.forwards && lateralOut < minVoltage && lateralOut > 0) lateralOut = minVoltage;
+        if (!params.forwards && -lateralOut < minVoltage && lateralOut < 0) lateralOut = -minVoltage;
+
+        prevAngularOut = angularOut;
+        prevLateralOut = lateralOut;
+
+        float leftPower = lateralOut + angularOut;
+        float rightPower = lateralOut - angularOut;
+        const float ratio = std::max(std::fabs(leftPower), std::fabs(rightPower)) / allowedVoltage;
+        if (ratio > 1) {
+            leftPower /= ratio;
+            rightPower /= ratio;
+        }
+
+        drivetrain.leftMotors->move_voltage(static_cast<int>(std::lround(leftPower)));
+        drivetrain.rightMotors->move_voltage(static_cast<int>(std::lround(rightPower)));
+        pros::delay(10);
+    }
+
+    drivetrain.leftMotors->move_voltage(0);
+    drivetrain.rightMotors->move_voltage(0);
+    distTraveled = -1;
+    this->endMotion();
+}

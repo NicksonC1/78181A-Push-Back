@@ -80,8 +80,8 @@
     },
     "upload_options": {
       "description": "Official Code for 78181A Genesis",
-      "icon": "planet",
-      "slot": 1
+      "icon": "alien",
+      "slot": 2
     },
     "use_early_access": false
   }

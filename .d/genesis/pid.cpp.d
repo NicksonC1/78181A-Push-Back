@@ -8,8 +8,8 @@ bin/genesis/pid.cpp.o: src/genesis/pid.cpp include/genesis/pid.hpp \
  include/pros/rtos.hpp include/pros/motor_group.hpp \
  include/pros/colors.hpp include/pros/adi.hpp include/pros/adi.h \
  include/pros/rotation.hpp include/pros/rotation.h \
- include/genesis/pose.hpp include/genesis/exitcondition.hpp \
- include/genesis/driveCurve.hpp
+ include/genesis/pose.hpp include/genesis/motionPlus.hpp \
+ include/genesis/exitcondition.hpp include/genesis/driveCurve.hpp
 include/genesis/pid.hpp:
 include/genesis/util.hpp:
 include/genesis/chassis/chassis.hpp:
@@ -33,5 +33,6 @@ include/pros/adi.h:
 include/pros/rotation.hpp:
 include/pros/rotation.h:
 include/genesis/pose.hpp:
+include/genesis/motionPlus.hpp:
 include/genesis/exitcondition.hpp:
 include/genesis/driveCurve.hpp:
